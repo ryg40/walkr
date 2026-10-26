@@ -1,9 +1,8 @@
-import test from "node:test";
+import test from "./posix-only-mode.js";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { close, createReadStream, mkdtempSync, open, read, writeFileSync } from "node:fs";
 import { finished } from "node:stream/promises";
-import os from "node:os";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { fixture, listen } from "./double-fixtures.js";
@@ -11,6 +10,7 @@ import { SERVER_PROTOCOL } from "../src/paths.js";
 import { createDoubleChatClient } from "../src/double-chat-client.js";
 import { installDoubleChat, BATCH_MESSAGE, batchMessage } from "../src/double-chat-subscription.js";
 import { RECEIPT_LIMITS } from "../src/double-chat-receipt.js";
+import { tmpRoot } from "./tmp-root.js";
 
 async function until(check, timeout = 5000, message = "Timed out waiting for the subscription boundary") {
   const end = Date.now() + timeout;
@@ -25,7 +25,7 @@ function harness(t, client, options = {}) {
   const handlers = new Map(), tools = new Map(), commands = new Map();
   const entries = options.entries ?? [];
   let branch = entries;
-  const root = mkdtempSync(path.join(os.tmpdir(), "double-chat-session-"));
+  const root = mkdtempSync(path.join(tmpRoot, "double-chat-session-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   let sessionId = "origin-session", sessionFile = options.sessionFile ?? path.join(root, "session.jsonl");
   const sent = [], queue = [];
@@ -445,7 +445,10 @@ function pausedReceiptIO(statNumber = 1) {
       const result = await fs.stat(file, options);
       if (++count === statNumber) {
         reached.resolve();
-        await release.promise;
+        // A real pending stat keeps the event loop alive; the deadline timer
+        // from AbortSignal.timeout does not, so hold a handle while paused.
+        const pending = setInterval(() => {}, 1000);
+        try { await release.promise; } finally { clearInterval(pending); }
       }
       return result;
     },

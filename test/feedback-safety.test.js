@@ -2,12 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { tmpRoot } from "./tmp-root.js";
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "human-review-safety-"));
+const tmp = fs.mkdtempSync(path.join(tmpRoot, "human-review-safety-"));
 process.env.HUMAN_REVIEW_STATE_DIR = path.join(tmp, "state");
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 

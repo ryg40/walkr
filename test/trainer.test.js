@@ -1,19 +1,19 @@
-import test from "node:test";
+import test from "./posix-only-mode.js";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { JSDOM } from "jsdom";
 import { listen, request } from "./double-fixtures.js";
 import { toggleRank } from "../src/trainer-rank.js";
+import { tmpRoot } from "./tmp-root.js";
 
 const sha = (text) => createHash("sha256").update(text).digest("hex");
 const API = "/_walkr/trainer/api";
 const PERMUTATIONS = [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]];
 
 async function setup(t) {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "walkr-trainer-"));
+  const dir = await fs.mkdtemp(path.join(tmpRoot, "walkr-trainer-"));
   t.after(() => fs.rm(dir, { recursive: true, force: true }));
   const stateDir = path.join(dir, "state");
   await fs.mkdir(stateDir, { mode: 0o700 });
@@ -337,7 +337,7 @@ test("unsafe repo names, traversal, symlinked and writable roots are refused wit
   assert.deepEqual(await fs.readdir(path.join(outside, fakeSession)), []);
   assert.deepEqual((await fs.readdir(outside)).sort(), [fakeSession]);
   assert.deepEqual(await fs.readdir(writable), []);
-  const written = (await files(f.dir)).filter((file) => !file.startsWith(`${f.root}/`) && !file.startsWith(`${f.stateDir}/`));
+  const written = (await files(f.dir)).filter((file) => !file.startsWith(`${f.root}${path.sep}`) && !file.startsWith(`${f.stateDir}${path.sep}`));
   assert.deepEqual(written, []);
 });
 

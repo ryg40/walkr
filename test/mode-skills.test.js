@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import test from "node:test";
 import { SKILL_NAMES, installSkills, readSkill } from "../src/setup.js";
+import { tmpRoot } from "./tmp-root.js";
 
 const repository = path.resolve(import.meta.dirname, "..");
 const piPackage = process.env.HUMAN_REVIEW_TEST_PI_PACKAGE;
@@ -26,7 +26,7 @@ test("router links resolve to the four sibling skills", () => {
 
 test("Pi-discovered nested and renamed collisions refuse before installation or legacy moves", { skip: piPackage ? false : "Set HUMAN_REVIEW_TEST_PI_PACKAGE to an installed Pi package" }, async (t) => {
   const { loadSkillsFromDir } = await import(pathToFileURL(path.join(piPackage, "dist/core/skills.js")));
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "walkr-pi-collisions-"));
+  const root = fs.mkdtempSync(path.join(tmpRoot, "walkr-pi-collisions-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const legacy = fs.readFileSync(new URL("./fixtures/mode-skills/legacy-skill.txt", import.meta.url), "utf8");
   const cases = [
@@ -60,7 +60,7 @@ test("Pi-discovered nested and renamed collisions refuse before installation or 
 });
 
 test("installed Pi loads exact aliases and skills offline, preserves argument data, and runs no extension", { skip: piPackage ? false : "Set HUMAN_REVIEW_TEST_PI_PACKAGE to an installed Pi package" }, async (t) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "walkr-pi-resources-"));
+  const root = fs.mkdtempSync(path.join(tmpRoot, "walkr-pi-resources-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const home = path.join(root, "home with spaces");
   const cwd = path.join(root, "project");

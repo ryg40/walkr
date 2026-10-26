@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
+import { tmpRoot } from "./tmp-root.js";
 
 export const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -64,7 +64,7 @@ const parse = (text) => {
 
 /** A detached review server on a disposable state directory; `restart` replaces it on the same state. */
 export async function disposableServer(t, env = {}) {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "walkr-core-wake-"));
+  const tmp = fs.mkdtempSync(path.join(tmpRoot, "walkr-core-wake-"));
   const stateDir = path.join(tmp, "state");
   const fixture = { tmp, stateDir, server: null, child: null };
   async function launch() {

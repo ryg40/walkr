@@ -1,9 +1,11 @@
 import { createHash } from "node:crypto";
 import { configuration, connectDoubleClient, request } from "./double-client.js";
 import { encodeDoubleComparisonId } from "./double-route.js";
+import { assertPosixOnly } from "./posix-only.js";
 
 // The CLI's private HTTP boundary, without a new child for every event read.
 export function createDoubleSessionChatClient(env = process.env) {
+  assertPosixOnly();
   const config = configuration({ ...env });
   const hash = (value) => createHash("sha256").update(value).digest("hex");
   let server;

@@ -3,6 +3,7 @@ import { DoubleArchive, hash, fail, id, capture, requireShape, contains, absolut
 import { validateDoubleInput } from "./double-input.js";
 import { checkedCopies } from "./double-copies.js";
 import { steerProblem } from "./steer-limits.js";
+import { POSIX_ONLY_CODE, posixOnlyRefusal } from "./posix-only.js";
 
 // Coinflip terms: a candidate is one whole standalone component; the winner is the
 // candidate the owner explicitly chose. Neither is a Double keeper or composition.
@@ -277,7 +278,9 @@ export class CoinflipStore {
   #separate;
   #steerLimits;
   // `steerLimits` exists for tests that write records under other limits; the shell and the server use the defaults.
-  constructor({ archiveDir, stateDir, steerLimits }) {
+  constructor({ archiveDir, stateDir, steerLimits, platform = process.platform }) {
+    const refusal = posixOnlyRefusal(platform);
+    if (refusal) fail(POSIX_ONLY_CODE, refusal);
     this.#steerLimits = steerLimits;
     absolute(archiveDir);
     if (stateDir !== undefined) absolute(stateDir);
@@ -290,7 +293,7 @@ export class CoinflipStore {
         }
       }
     };
-    this.#archive = new DoubleArchive({ archiveDir, prefix: "coinflip-session", identity: "sessionId", decode,
+    this.#archive = new DoubleArchive({ archiveDir, prefix: "coinflip-session", identity: "sessionId", decode, platform,
       separate: (doc) => doc.candidates.forEach((c) => this.#separate(c.pane)) });
   }
 

@@ -2,13 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
+import { tmpRoot } from "./tmp-root.js";
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "human-review-poll-"));
+const tmp = fs.mkdtempSync(path.join(tmpRoot, "human-review-poll-"));
 process.env.HUMAN_REVIEW_STATE_DIR = path.join(tmp, "state");
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 

@@ -2,14 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
 import { SERVER_PROTOCOL } from "../src/paths.js";
+import { tmpRoot } from "./tmp-root.js";
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "human-review-loop-"));
+const tmp = fs.mkdtempSync(path.join(tmpRoot, "human-review-loop-"));
 process.env.HUMAN_REVIEW_STATE_DIR = path.join(tmp, "state");
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const env = { ...process.env, HUMAN_REVIEW_STATE_DIR: process.env.HUMAN_REVIEW_STATE_DIR };

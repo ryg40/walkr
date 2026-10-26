@@ -4,11 +4,14 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { DoubleStore } from "./double-store.js";
 import { SERVER_PROTOCOL } from "./paths.js";
+import { overlaps } from "./canonical-path.js";
+import { assertPosixOnly } from "./posix-only.js";
 
 const fail = (message) => { throw new Error(message); };
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 
-export function configuration(env = process.env) {
+export function configuration(env = process.env, platform = process.platform) {
+  assertPosixOnly(platform); // Before any configuration or path access.
   if (env.HUMAN_REVIEW_HOSTED === "1") fail("Double is not available in hosted mode.");
   const archiveDir = env.HUMAN_REVIEW_DOUBLE_ARCHIVE_DIR;
   const stateDir = env.HUMAN_REVIEW_STATE_DIR;
@@ -17,14 +20,15 @@ export function configuration(env = process.env) {
   catch { fail("Double requires an explicit canonical absolute HUMAN_REVIEW_DOUBLE_ARCHIVE_DIR."); }
   try { new DoubleStore({ archiveDir: stateDir }); }
   catch { fail("Double requires an explicit canonical absolute HUMAN_REVIEW_STATE_DIR."); }
-  if (stateDir === archiveDir || stateDir.startsWith(`${archiveDir}/`) || archiveDir.startsWith(`${stateDir}/`)) {
+  if (overlaps(stateDir, archiveDir)) {
     fail("Double state and archive directories must be separate, not nested.");
   }
   return { archiveDir, stateDir };
 }
 
 
-export async function privatePath(file, directory) {
+export async function privatePath(file, directory, platform = process.platform) {
+  assertPosixOnly(platform);
   let current = path.parse(file).root;
   for (const part of file.slice(current.length).split(path.sep)) {
     current = path.join(current, part);
@@ -37,8 +41,9 @@ export async function privatePath(file, directory) {
   }
 }
 
-export async function connectDoubleClient(config, { signal, sessions = false } = {}) {
-  const server = await serverRecord(config.stateDir);
+export async function connectDoubleClient(config, { signal, sessions = false, platform = process.platform } = {}) {
+  assertPosixOnly(platform); // Before any configuration or path access.
+  const server = await serverRecord(config.stateDir, platform);
   const capability = await request(server, "/api/double/capabilities", { signal });
   if (capability.double !== 1 || capability.archiveId !== hash(config.archiveDir) || capability.recovery !== "authenticated-reopen") {
     fail("The existing server has incompatible Double support or a different archive. It was not replaced.");
@@ -47,11 +52,12 @@ export async function connectDoubleClient(config, { signal, sessions = false } =
   return { server, capability };
 }
 
-export async function serverRecord(stateDir) {
+export async function serverRecord(stateDir, platform = process.platform) {
+  assertPosixOnly(platform); // Outside the try: the catch below would hide the refusal.
   try {
-    await privatePath(stateDir, true);
+    await privatePath(stateDir, true, platform);
     const file = path.join(stateDir, "server.json");
-    await privatePath(file, false);
+    await privatePath(file, false, platform);
     const record = JSON.parse(await fs.readFile(file, "utf8"));
     if (record.protocol !== SERVER_PROTOCOL || !Number.isInteger(record.port) || record.port < 1 || record.port > 65535 ||
         typeof record.token !== "string" || !/^[a-f0-9]{32}$/.test(record.token)) throw new Error();

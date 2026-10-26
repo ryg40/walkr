@@ -1,10 +1,10 @@
-import test from "node:test";
+import test from "./posix-only-mode.js";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, writeFile, readFile, readdir, lstat, symlink, link, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { validateDoubleInput } from "../src/double-input.js";
+import { tmpRoot } from "./tmp-root.js";
 
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=", "base64");
@@ -12,7 +12,7 @@ const region = (id = "hero", label = "Hero") => `<section data-double-id="${id}"
 const page = (body = region(), head = '<link rel="stylesheet" href="base.css">') => `<!doctype html><html><head><meta charset="utf-8">${head}</head><body>${body}</body></html>`;
 
 async function fixture(t) {
-  const root = await mkdtemp(path.join(tmpdir(), "double-input-"));
+  const root = await mkdtemp(path.join(tmpRoot, "double-input-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const input = { comparisonId: "trial:1", label: "Two proposals", panes: {} };
   for (const pane of ["left", "right"]) {

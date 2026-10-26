@@ -221,6 +221,8 @@ function discoveryName(file, fallback) {
 }
 
 const DISCOVERY_VISIT_LIMIT = 20000;
+// Discovery resolves with realpathSync.native: one system call per path, where the JS version
+// walks each component (slow on Windows near the visit limit). Linux and macOS results are the same.
 const inside = (child, parent) => {
   const relative = path.relative(parent, child);
   return relative === "" || (relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative));
@@ -229,7 +231,7 @@ const inside = (child, parent) => {
 // Resolve a planned path through its existing parent, so it compares with resolved link targets.
 function resolvedPlan(file) {
   const parent = path.dirname(file);
-  return stat(parent) ? path.join(fs.realpathSync(parent), path.basename(file)) : file;
+  return stat(parent) ? path.join(fs.realpathSync.native(parent), path.basename(file)) : file;
 }
 
 // Pi discovers skills through links, so read through each link with the same name checks.
@@ -237,7 +239,7 @@ function resolvedPlan(file) {
 // or moves into (a Walkr skill directory or the legacy backup directory) is refused.
 function followLink(link, logical, context, includeRootFiles, chain) {
   let target;
-  try { target = fs.realpathSync(link); }
+  try { target = fs.realpathSync.native(link); }
   catch (error) { conflict(link, `unresolvable symlinks (${error.code}) make discovery uncertain`); }
   for (const guarded of context.guarded) {
     if (inside(target, guarded) || inside(guarded, target)) conflict(link, "symlinks into or above a Walkr setup path are never followed");
@@ -260,10 +262,10 @@ function preflightDiscovery(root, context, includeRootFiles = true, chain = new 
   const info = safePath(root);
   if (!info) return;
   if (!info.isDirectory()) conflict(root, "expected a skills directory");
-  const real = fs.realpathSync(root);
+  const real = fs.realpathSync.native(root);
   if (chain.has(real)) return; // A link back to an ancestor ends the walk; Pi sees no new skills there.
   // Link fan-out without a cycle grows the walk exponentially. Refuse instead of hanging.
-  if (++context.visits > DISCOVERY_VISIT_LIMIT) conflict(logical, `discovery visits more than ${DISCOVERY_VISIT_LIMIT} directories through links`);
+  if (++context.visits > context.visitLimit) conflict(logical, `discovery visits more than ${context.visitLimit} directories through links`);
   chain = new Set(chain).add(real);
   // Pi supports cascading ignore files. Without its ignore parser, their effect
   // is uncertain, including whether new skills would be hidden.
@@ -293,6 +295,7 @@ function preflightDiscovery(root, context, includeRootFiles = true, chain = new 
 /** Preflight the entire install before writes. Pi profile writes require an explicit absolute path. */
 export function installSkills(cwd, {
   global: isGlobal = false, home = os.homedir(), piAgentDir, dryRun = false,
+  discoveryVisitLimit = DISCOVERY_VISIT_LIMIT, // Internal and undocumented: tests lower the limit; it never rises.
 } = {}) {
   cwd = path.resolve(cwd);
   home = path.resolve(home);
@@ -393,7 +396,10 @@ export function installSkills(cwd, {
   const guarded = [...plans.keys()].flatMap((base) => [
     ...SKILL_NAMES.map((name) => path.join(base, "skills", name)), path.join(base, ".walkr-setup-backups"),
   ]).map(resolvedPlan);
-  for (const base of plans.keys()) preflightDiscovery(path.join(base, "skills"), { expected, guarded, visits: 0 });
+  // The option can only lower the ceiling: a value that is not a positive integer below it keeps the default.
+  const visitLimit = Number.isSafeInteger(discoveryVisitLimit) && discoveryVisitLimit > 0
+    ? Math.min(discoveryVisitLimit, DISCOVERY_VISIT_LIMIT) : DISCOVERY_VISIT_LIMIT;
+  for (const base of plans.keys()) preflightDiscovery(path.join(base, "skills"), { expected, guarded, visits: 0, visitLimit });
   if (!isGlobal) {
     const agents = path.join(cwd, "AGENTS.md");
     const existing = readRegular(agents) ?? "";

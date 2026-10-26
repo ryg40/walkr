@@ -1,0 +1,17 @@
+# Walkr hashes, parses and serves its text files byte for byte (for example the
+# legacy skill hashes in src/setup.js). Keep LF line ends in every checkout,
+# also on Windows with core.autocrlf=true.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tgz binary

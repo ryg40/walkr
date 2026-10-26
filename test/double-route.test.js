@@ -1,4 +1,4 @@
-import test from "node:test";
+import test from "./posix-only-mode.js";
 import assert from "node:assert/strict";
 import { decodeDoubleComparisonId, encodeDoubleComparisonId } from "../src/double-route.js";
 

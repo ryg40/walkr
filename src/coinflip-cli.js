@@ -3,6 +3,7 @@ import path from "node:path";
 import { encodeDoubleComparisonId } from "./double-route.js";
 import { configuration, connectDoubleClient, request } from "./double-client.js";
 import { contains } from "./double-archive.js";
+import { posixOnlyRefusal } from "./posix-only.js";
 
 const HELP = `walkr-coinflip
   gui view                                   Read bound chat, connection, and saved GUI sessions
@@ -70,6 +71,8 @@ async function writeWinner(folder, winner) {
 
 export async function runCoinflip(args) {
   if (args.length === 0 || args.length === 1 && ["--help", "-h", "help"].includes(args[0])) return stdout(HELP);
+  const refusal = posixOnlyRefusal(); // Before hosted, argument and path checks; help stays available.
+  if (refusal) fail(refusal);
   let config; // Hosted rejection precedes argument and path access. Coinflip shares the Double configuration.
   try { config = configuration(); } catch (error) { fail(error.message.replace(/^Double/, "Coinflip")); }
   const options = parse(args);

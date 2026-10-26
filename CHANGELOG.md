@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.1 (2026-10-26)
+
+CI fixes:
+
+- Linux (Node 20 and 22): a Double chat test no longer stalls, so the runner no longer cancels the tests after it.
+- macOS: temp paths resolve through `/private/var`.
+- Windows: canonical Windows paths and LF line ends work.
+- Windows: Double, Coinflip, the shared GUI and Trainer refuse with one clear error, because they need Linux or macOS. The refusal covers the commands, the servers, the Pi clients and the stores. Core review and setup stay supported.
+
 ## 0.9.0 (2026-10-26)
 
 This is the first public release of Walkr.

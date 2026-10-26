@@ -1,6 +1,6 @@
 {
   "name": "walkr",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Local review tool for HTML and Markdown with browser feedback, Double, Coinflip, and Trainer modes for coding agents.",
   "author": "Peter Yang",
   "contributors": [

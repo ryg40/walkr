@@ -4,6 +4,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { Parser } from "parse5";
 import * as css from "css-tree";
+import { isCanonicalAbsolute } from "./canonical-path.js";
 
 const PANES = ["left", "right"];
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif"]);
@@ -58,8 +59,7 @@ function identity(value, context) {
 }
 
 function absolutePath(value, context) {
-  if (typeof value !== "string" || !path.isAbsolute(value) || value.endsWith(path.sep) ||
-      path.normalize(value) !== value || /[\x00-\x1f\x7f\\]/.test(value)) {
+  if (!isCanonicalAbsolute(value)) {
     reject("INVALID_PATH", "Use a canonical absolute path without traversal or a trailing slash.", context);
   }
 }

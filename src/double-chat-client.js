@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { encodeDoubleComparisonId } from "./double-route.js";
+import { assertPosixOnly } from "./posix-only.js";
 
 const cli = fileURLToPath(new URL("./cli.js", import.meta.url));
 const MAX_OUTPUT = 64 * 1024 * 1024;
@@ -9,6 +10,7 @@ const MAX_OUTPUT = 64 * 1024 * 1024;
 // Keep authentication and private-path checks in the existing CLI. Never put a
 // credential on argv or return child diagnostics to a chat.
 export function createDoubleChatClient(env = process.env) {
+  assertPosixOnly(); // The child CLI would refuse too, but its diagnostics never reach the chat.
   const childEnv = { ...env };
   const archive = childEnv.HUMAN_REVIEW_DOUBLE_ARCHIVE_DIR;
   if (!archive || !childEnv.HUMAN_REVIEW_STATE_DIR) throw new Error("Double requires explicit state and archive paths.");

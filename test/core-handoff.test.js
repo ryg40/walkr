@@ -2,13 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
 import { codeSpan, handoffPrompt, handoffText } from "../src/chrome-session.js";
 import { commandArg, reviewInvocation, shellQuote } from "../src/setup.js";
+import { tmpRoot } from "./tmp-root.js";
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -59,7 +59,7 @@ function cli(stateDir, args) {
 }
 
 async function disposableServer(t) {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "walkr-core-handoff-"));
+  const tmp = fs.mkdtempSync(path.join(tmpRoot, "walkr-core-handoff-"));
   const stateDir = path.join(tmp, "state");
   const child = spawn(process.execPath, ["src/server-entry.js"], {
     cwd: project,
@@ -148,7 +148,7 @@ test("the handoff message names the waiting batch, and gives nothing without a p
 
 test("command arguments stay literal in bash, and the managed host names walkr-core", () => {
   for (const value of ["/tmp/plain.html", "/tmp/a $HOME b.html", "/tmp/`id`.html", '/tmp/say "hi".html', "/tmp/it's.html", "/tmp/$(id)"]) {
-    assert.deepEqual(bashArgs(`x ${commandArg(value)}`, "x"), [value]);
+    assert.deepEqual(bashArgs(`x ${commandArg(value, "linux")}`, "x"), [value]);
   }
   assert.equal(commandArg("/tmp/a b.html", "win32"), shellQuote("/tmp/a b.html"), "cmd and PowerShell keep double quotes");
   assert.equal(reviewInvocation({ HUMAN_REVIEW_HOSTED: "1" }), "walkr-core");
@@ -217,7 +217,8 @@ test("a Send with no poller stays saved, and the handoff collects the exact batc
   assert.equal(JSON.parse((await cli(stateDir, ["status", target])).stdout).status, "idle");
 });
 
-test("a handoff for a path with $, a backtick and a double quote runs the exact target in bash", async (t) => {
+// Windows file names cannot hold a double quote, and Windows commands use cmd and PowerShell quoting.
+test("a handoff for a path with $, a backtick and a double quote runs the exact target in bash", { skip: process.platform === "win32" }, async (t) => {
   const { tmp, stateDir, server } = await disposableServer(t);
   const dir = path.join(tmp, 'a $HOME `id` "q"');
   fs.mkdirSync(dir);

@@ -5,6 +5,8 @@ import path from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
 import { capture, fail, hash, id, inspect, readBytes } from "./double-archive.js";
 import { completeRanking } from "./trainer-rank.js";
+import { isCanonicalAbsolute } from "./canonical-path.js";
+import { POSIX_ONLY_CODE, posixOnlyRefusal } from "./posix-only.js";
 
 export const SCHEMA = "walkr-trainer-dataset";
 export const VERSION = 1;
@@ -22,8 +24,7 @@ export function trainerRoot(env = process.env, home = os.homedir()) {
 }
 
 export function canonicalRoot(value) {
-  if (typeof value !== "string" || !path.isAbsolute(value) || value === path.parse(value).root ||
-      value.endsWith(path.sep) || path.normalize(value) !== value || /[\x00-\x1f\x7f\\]/.test(value)) {
+  if (!isCanonicalAbsolute(value)) {
     fail("UNSAFE_PATH", "The Trainer root must be a canonical absolute directory without traversal or a trailing slash.");
   }
   return value;
@@ -152,7 +153,9 @@ export function voteDigest(groupId, ranks) { return hash(canonical({ groupId, ra
 export class TrainerStore {
   #root;
 
-  constructor({ root }) {
+  constructor({ root, platform = process.platform }) {
+    const refusal = posixOnlyRefusal(platform);
+    if (refusal) fail(POSIX_ONLY_CODE, refusal);
     this.#root = canonicalRoot(root);
   }
 

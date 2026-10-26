@@ -3,6 +3,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
+import { isCanonicalAbsolute } from "./canonical-path.js";
+import { POSIX_ONLY_CODE, posixOnlyRefusal } from "./posix-only.js";
 
 const queues = new Map();
 export const hash = (value) => createHash("sha256").update(value).digest("hex");
@@ -63,8 +65,7 @@ export function capture(value, code = "INVALID_REQUEST") {
 }
 
 export function absolute(value) {
-  if (typeof value !== "string" || !path.isAbsolute(value) || value === path.parse(value).root ||
-      value.endsWith(path.sep) || path.normalize(value) !== value || /[\x00-\x1f\x7f\\]/.test(value)) {
+  if (!isCanonicalAbsolute(value)) {
     fail("UNSAFE_PATH", "Use an explicit canonical absolute archive directory, without traversal or a trailing slash.");
   }
 }
@@ -79,8 +80,8 @@ function sameVersion(a, b) {
 }
 
 export async function inspect(file, directory = false, privatePath = false) {
-  const parts = file.slice(1).split(path.sep);
   let current = path.parse(file).root;
+  const parts = file.slice(current.length).split(path.sep);
   let stat;
   for (const part of parts) {
     current = path.join(current, part);
@@ -133,7 +134,10 @@ export class DoubleArchive {
   #decode;
   #separate;
 
-  constructor({ archiveDir, prefix, identity, decode, separate }) {
+  // Every Double, Coinflip, shared-GUI and Trainer GUI record goes through here, so Windows refuses at this boundary too.
+  constructor({ archiveDir, prefix, identity, decode, separate, platform = process.platform }) {
+    const refusal = posixOnlyRefusal(platform);
+    if (refusal) fail(POSIX_ONLY_CODE, refusal);
     absolute(archiveDir);
     if (!["double", "double-session", "shared-gui", "coinflip-session", "trainer-gui"].includes(prefix)) fail("UNSAFE_PATH", "Unknown Double archive namespace.");
     this.#archiveDir = archiveDir;

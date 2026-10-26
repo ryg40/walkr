@@ -9,6 +9,8 @@ import { createSharedGuiModes, SHARED_GUI_MODE_ASSETS, SHARED_GUI_MODE_PANELS } 
 import { decodeDoubleComparisonId } from "./double-route.js";
 import { checkedCopies, injectDouble } from "./double-copies.js";
 import { escapeHtml } from "./hosted.js";
+import { overlaps } from "./canonical-path.js";
+import { POSIX_ONLY_CODE, posixOnlyRefusal } from "./posix-only.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PANES = ["left", "right"];
@@ -29,6 +31,7 @@ const STATUS = {
   DISCONNECTED: 409, ACTIVE_SESSION: 409, SESSION_EXISTS: 409, STALE_COMPARISON: 409, STALE_ATTEMPT: 409, UNKNOWN_EVENT: 409, UNSUPPORTED_FINAL: 409,
   WRITE_FAILED: 503, COMMIT_UNCERTAIN: 503, RECOVERY_REQUIRED: 503,
   UNAUTHORIZED: 401, FORBIDDEN: 403, HOSTED_UNSUPPORTED: 403, DOUBLE_DISABLED: 503, METHOD_NOT_ALLOWED: 405,
+  [POSIX_ONLY_CODE]: 501,
 };
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const secret = () => randomBytes(32).toString("hex");
@@ -57,7 +60,7 @@ async function readBody(req) {
 }
 
 /** An opt-in adapter; it never calls the legacy Store or writes source/copy files. */
-export function createDoubleHandler({ token, archiveDir, stateDir, hosted, trainer }) {
+export function createDoubleHandler({ token, archiveDir, stateDir, hosted, trainer, platform = process.platform }) {
   const shells = new Map();
   const browsers = new Map();
   const artifacts = new Map();
@@ -101,8 +104,10 @@ export function createDoubleHandler({ token, archiveDir, stateDir, hosted, train
 
   function enabled() {
     if (hosted) fail("HOSTED_UNSUPPORTED", "Double is not available in hosted mode.");
+    const refusal = posixOnlyRefusal(platform);
+    if (refusal) fail(POSIX_ONLY_CODE, refusal);
     if (!archiveDir) fail("DOUBLE_DISABLED", "Double requires an explicit absolute HUMAN_REVIEW_DOUBLE_ARCHIVE_DIR.");
-    if (stateDir === archiveDir || stateDir.startsWith(`${archiveDir}/`) || archiveDir.startsWith(`${stateDir}/`)) {
+    if (overlaps(stateDir, archiveDir)) {
       fail("UNSAFE_PATH", "Double archive and runtime state must be separate, not nested.");
     }
     store ??= new DoubleStore({ archiveDir });
@@ -115,7 +120,7 @@ export function createDoubleHandler({ token, archiveDir, stateDir, hosted, train
   function separateState(input) {
     for (const pane of PANES) {
       const root = input?.panes?.[pane]?.copy?.root;
-      if (typeof root === "string" && (root === stateDir || root.startsWith(`${stateDir}/`) || stateDir.startsWith(`${root}/`))) {
+      if (typeof root === "string" && overlaps(root, stateDir)) {
         fail("UNSAFE_PATH", "Review copies must be separate from runtime state.");
       }
     }

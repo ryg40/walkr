@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import { tmpRoot } from "./tmp-root.js";
 
 export const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 export async function fixture(t, comparisonId = "trial") {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "double-integration-"));
+  const root = await fs.mkdtemp(path.join(tmpRoot, "double-integration-"));
   // After hooks run in registration order, so this one runs before later hooks such as listen() close.
   // A server request still running during the removal can recreate the archive. Close servers first.
   const beforeRemove = [];

@@ -24,6 +24,7 @@ from pathlib import Path
 
 # Exact files. Each one must exist in the source commit; a missing file is a finding.
 PUBLISH = (
+    ".gitattributes",
     ".gitignore",
     "CHANGELOG.md",
     "GLOSSARY.md",

@@ -176,7 +176,9 @@ test("a batch saved before batch ids gets a derived id; its legacy group clears 
 });
 
 test("only an explicit connect binds a Pi chat; another chat is refused, and status from the bound chat renews the watcher", async (t) => {
-  const f = await disposableServer(t, { HUMAN_REVIEW_WAKE_LEASE_MS: "600" });
+  // Two CLI starts must fit in one lease; a Windows process start takes several hundred ms.
+  const lease = process.platform === "win32" ? 3000 : 600;
+  const f = await disposableServer(t, { HUMAN_REVIEW_WAKE_LEASE_MS: String(lease) });
   const r = await openReview(f);
   const before = await status(f, r.target);
   assert.deepEqual(before.wake, { bound: false, watching: false, lease_expired: false });
@@ -193,7 +195,7 @@ test("only an explicit connect binds a Pi chat; another chat is refused, and sta
   assert.deepEqual((await status(f, r.target, ...chatY)).wake, { bound: true, watching: true, lease_expired: false, bound_to_caller: false },
     "a refused connect changes nothing");
 
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, lease + 200));
   assert.equal((await status(f, r.target)).wake.watching, false, "the watcher lapses without status reads from the bound chat");
   assert.equal((await status(f, r.target, ...chatY)).wake.watching, false, "another chat's reads do not renew it");
   assert.equal((await status(f, r.target, ...chatX)).wake.watching, true, "the bound chat's read renews it");

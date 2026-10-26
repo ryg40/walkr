@@ -3,6 +3,7 @@ import { createReceiptVerifier } from "./double-chat-delivery.js";
 import { createDoubleChatClient } from "./double-chat-client.js";
 import { encodeDoubleComparisonId } from "./double-route.js";
 import { RECEIPT_LIMITS, ReceiptLimitError } from "./double-chat-receipt.js";
+import { assertPosixOnly, POSIX_ONLY_CODE } from "./posix-only.js";
 
 export const BATCH_MESSAGE = "double-chat-batch-v1";
 const ATTEMPT = "double-chat-attempt-v1";
@@ -27,6 +28,7 @@ export function installDoubleChat(pi, parameters, {
   deliveryTimeoutMs = 30000,
   acceptanceCheckMs = 100,
   receiptIO,
+  platform = process.platform,
 } = {}) {
   let current;
   let epoch = 0;
@@ -160,6 +162,7 @@ export function installDoubleChat(pi, parameters, {
   }
 
   async function execute(params, ctx) {
+    assertPosixOnly(platform);
     if (!current || !same(identity(current), identity(ctx))) throw new Error("Double requires the active originating session.");
     if (!["tui", "rpc"].includes(ctx.mode) || !identity(ctx).sessionFile) {
       throw new Error("Double listening requires a persistent interactive or RPC Pi session, not print/JSON/--no-session.");
@@ -239,7 +242,7 @@ export function installDoubleChat(pi, parameters, {
       const origin = identity(ctx);
       let result;
       try { result = await execute(JSON.parse(args), ctx); }
-      catch { result = { status: "command_failed", active: false, message: "Check the JSON arguments, active session, or existing listener. Use the double_chat tool for validation details." }; }
+      catch (error) { result = { status: "command_failed", active: false, message: error.code === POSIX_ONLY_CODE ? error.message : "Check the JSON arguments, active session, or existing listener. Use the double_chat tool for validation details." }; }
       if (!current || commandEpoch !== epoch || !same(origin, identity(current))) return;
       pi.sendMessage({ customType: "double-chat-command-v1", content: JSON.stringify(result), display: true }, { triggerTurn: false });
     },

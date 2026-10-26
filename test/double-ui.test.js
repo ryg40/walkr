@@ -1,15 +1,15 @@
-import test from "node:test";
+import test from "./posix-only-mode.js";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
-import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
 import { JSDOM } from "jsdom";
 import { DoubleStore } from "../src/double-store.js";
 import { decodeDoubleComparisonId } from "../src/double-route.js";
 import { THEMES } from "../src/theme.js";
+import { tmpRoot } from "./tmp-root.js";
 import {
   CHANNEL,
   bootDouble,
@@ -943,7 +943,7 @@ async function storeFixture(t, {
   headAttrs = "",
   head = "",
 } = {}) {
-  const root = await fsp.mkdtemp(path.join(tmpdir(), "double-ui-"));
+  const root = await fsp.mkdtemp(path.join(tmpRoot, "double-ui-"));
   t.after(() => fsp.rm(root, { recursive: true, force: true }));
   const input = { comparisonId, label: "Landing proposals", panes: {} };
   const pages = {};

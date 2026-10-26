@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { once } from "node:events";
 
 import { createServer } from "../src/server.js";
+import { tmpRoot } from "./tmp-root.js";
 
 test("a review keeps the CLI invocation resolved when its server starts", async () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "human-review-command-"));
+  const tmp = fs.mkdtempSync(path.join(tmpRoot, "human-review-command-"));
   const originalPath = process.env.PATH;
   const originalStateDir = process.env.HUMAN_REVIEW_STATE_DIR;
   const bin = path.join(tmp, "bin");

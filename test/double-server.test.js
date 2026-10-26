@@ -1,4 +1,4 @@
-import test from "node:test";
+import test from "./posix-only-mode.js";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { writeFileSync } from "node:fs";

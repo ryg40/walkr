@@ -1,12 +1,12 @@
-import test from "node:test";
+import test from "./posix-only-mode.js";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { DoubleStore } from "../src/double-store.js";
+import { tmpRoot } from "./tmp-root.js";
 
 const execute = promisify(execFile);
 const hash = (value) => createHash("sha256").update(value).digest("hex");
@@ -22,7 +22,7 @@ const rejects = (promise, code) => assert.rejects(promise, (error) => {
 });
 
 async function fixture(t, options = {}) {
-  const root = await fs.mkdtemp(path.join(tmpdir(), "double-store-"));
+  const root = await fs.mkdtemp(path.join(tmpRoot, "double-store-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const archiveDir = path.join(root, "archive");
   const input = { comparisonId: options.comparisonId || "trial:1", label: "Two proposals", panes: {} };

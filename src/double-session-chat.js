@@ -5,6 +5,7 @@ import { createDoubleSessionChatClient } from "./double-session-chat-client.js";
 import { createReceiptVerifier } from "./double-chat-delivery.js";
 import { RECEIPT_LIMITS } from "./double-chat-receipt.js";
 import { encodeDoubleComparisonId } from "./double-route.js";
+import { assertPosixOnly, POSIX_ONLY_CODE } from "./posix-only.js";
 
 export const SESSION_MESSAGE = "double-session-event-v1";
 const ATTEMPT = "double-session-delivery-attempt-v1";
@@ -54,7 +55,7 @@ export function sessionMessage(packet, receipt) {
 
 export function installDoubleSessionChat(pi, parameters, {
   clientFactory = () => createDoubleSessionChatClient(), pollMs = 250,
-  deliveryTimeoutMs = 30000, acceptanceCheckMs = 100, receiptIO,
+  deliveryTimeoutMs = 30000, acceptanceCheckMs = 100, receiptIO, platform = process.platform,
 } = {}) {
   let current, epoch = 0;
   const records = new Map();
@@ -244,6 +245,7 @@ export function installDoubleSessionChat(pi, parameters, {
     }
   }
   async function execute(params, ctx, ownership) {
+    assertPosixOnly(platform);
     if (!current || !same(identity(ctx), identity(current)) || !["tui", "rpc"].includes(ctx.mode) || !identity(ctx).sessionFile) {
       throw new Error("Double requires the active persistent TUI or RPC Pi session.");
     }
@@ -310,7 +312,7 @@ export function installDoubleSessionChat(pi, parameters, {
       const origin = identity(ctx), commandEpoch = epoch;
       let result;
       try { result = await execute(JSON.parse(args), ctx); }
-      catch { result = { status: "command_failed", active: false, message: "Check arguments and listener status. The tool reports validation details." }; }
+      catch (error) { result = { status: "command_failed", active: false, message: error.code === POSIX_ONLY_CODE ? error.message : "Check arguments and listener status. The tool reports validation details." }; }
       if (!current || commandEpoch !== epoch || !same(origin, identity(current))) return;
       pi.sendMessage({ customType: "double-session-chat-command-v1", content: JSON.stringify(result), display: true }, { triggerTurn: false });
     },

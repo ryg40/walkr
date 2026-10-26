@@ -2,10 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
+import { tmpRoot } from "./tmp-root.js";
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "human-review-paste-"));
+const tmp = fs.mkdtempSync(path.join(tmpRoot, "human-review-paste-"));
 process.env.HUMAN_REVIEW_STATE_DIR = path.join(tmp, "state");
 
 const { start } = await import("../src/server.js");

@@ -49,7 +49,7 @@ class Repository(unittest.TestCase):
         for hook in (SCRIPTS / "git-hooks").iterdir():
             shutil.copy2(hook, self.root / "scripts/git-hooks" / hook.name)
         files = {
-            ".gitignore": ".local/\n__pycache__/\n",
+            ".gitattributes": "* text=auto eol=lf\n", ".gitignore": ".local/\n__pycache__/\n",
             "CHANGELOG.md": "# Changes\n", "GLOSSARY.md": "# Words\n", "INSTALL.md": "# Install\n",
             "LICENSE": "MIT\n", "README.md": "# Walkr\n", "install.sh": "#!/bin/sh\n",
             "package-lock.json": "{}\n", "src/cli.js": "export {};\n", "test/cli.test.js": "// test\n",

@@ -3,6 +3,7 @@ import { DoubleArchive, hash, fail, id, capture, requireShape, contains, absolut
 import { prepareComparison, validateComparison, initialComparison, applyComparison, comparisonView, separateComparison } from "./double-store.js";
 import { capturePair, validateMaterial, finalPage } from "./double-final.js";
 import { steerProblem } from "./steer-limits.js";
+import { POSIX_ONLY_CODE, posixOnlyRefusal } from "./posix-only.js";
 
 const clone = structuredClone;
 const identity = (kind, ...parts) => `${kind}-${hash(JSON.stringify(parts))}`;
@@ -202,7 +203,9 @@ export class DoubleSessionStore {
   #separate;
   #steerLimits;
   // `steerLimits` exists for tests that write records under other limits; the shell and the server use the defaults.
-  constructor({ archiveDir, stateDir, steerLimits }) {
+  constructor({ archiveDir, stateDir, steerLimits, platform = process.platform }) {
+    const refusal = posixOnlyRefusal(platform); // Before the path checks below.
+    if (refusal) fail(POSIX_ONLY_CODE, refusal);
     this.#steerLimits = steerLimits;
     absolute(archiveDir);
     if (stateDir !== undefined) {
@@ -219,7 +222,7 @@ export class DoubleSessionStore {
         }
       }
     };
-    this.#archive = new DoubleArchive({ archiveDir, prefix: "double-session", identity: "sessionId", decode,
+    this.#archive = new DoubleArchive({ archiveDir, prefix: "double-session", identity: "sessionId", decode, platform,
       separate: (doc) => doc.rounds.forEach((r) => this.#separate(r.comparison.manifest)) });
   }
 

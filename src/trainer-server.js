@@ -5,6 +5,7 @@ import { randomBytes, timingSafeEqual } from "node:crypto";
 import { DoubleStoreError, hash } from "./double-archive.js";
 import { escapeHtml } from "./hosted.js";
 import { TrainerStore, repoName, sessionName } from "./trainer-store.js";
+import { POSIX_ONLY_CODE, posixOnlyRefusal } from "./posix-only.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PREFIX = "/_walkr/trainer/";
@@ -21,7 +22,7 @@ const STATUS = {
   UNSAFE_REPO: 400, UNSAFE_PATH: 400, NOT_FOUND: 404, METHOD_NOT_ALLOWED: 405,
   ACTION_CONFLICT: 409, INVALID_TRANSITION: 409, STALE_REVISION: 409, STALE_VOTE: 409, ANALYSIS_EXISTS: 409, FILE_CHANGED: 409,
   DISCONNECTED: 409, STALE_ATTEMPT: 409, READ_ONLY: 409, INVALID_SEGMENT: 400,
-  UNAUTHORIZED: 401, FORBIDDEN: 403, HOSTED_UNSUPPORTED: 403,
+  UNAUTHORIZED: 401, FORBIDDEN: 403, HOSTED_UNSUPPORTED: 403, [POSIX_ONLY_CODE]: 501,
   WRITE_FAILED: 503, COMMIT_UNCERTAIN: 503, RECOVERY_REQUIRED: 503, DOUBLE_DISABLED: 503,
 };
 const fail = (code, message) => { throw new DoubleStoreError(code, message); };
@@ -60,9 +61,9 @@ async function readBody(req) {
  * `gui` is the shared-GUI bridge: `link(reference, create)` links a create request to the GUI start that it names,
  * and `connected()` reports the bound Pi chat. Without it, a create request that names a GUI start is refused.
  */
-export function createTrainerHandler({ token, root, hosted, notify = () => {}, gui = null }) {
+export function createTrainerHandler({ token, root, hosted, notify = () => {}, gui = null, platform = process.platform }) {
   let store;
-  const opened = () => store ??= new TrainerStore({ root });
+  const opened = () => store ??= new TrainerStore({ root, platform });
   const bySession = new Map();
   const shells = new Map();
   const browsers = new Map();
@@ -95,6 +96,8 @@ export function createTrainerHandler({ token, root, hosted, notify = () => {}, g
     if (!raw.startsWith(PREFIX)) return false;
     try {
       if (hosted) fail("HOSTED_UNSUPPORTED", "Trainer is local-only. Hosted Trainer is not available.");
+      const refusal = posixOnlyRefusal(platform);
+      if (refusal) fail(POSIX_ONLY_CODE, refusal);
       if (req.url.includes("?") || raw.includes("#")) fail("INVALID_REQUEST", "Trainer routes do not accept query parameters or fragments.");
       opened();
       if (STATIC[raw]) {

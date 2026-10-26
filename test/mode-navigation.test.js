@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import http from "node:http";
 import { JSDOM } from "jsdom";
 import { fixture, listen, request } from "./double-fixtures.js";
+import { posixOnly } from "./posix-only-mode.js";
 import { initTheme, THEMES } from "../src/theme.js";
 
 const modes = ["core", "double", "coinflip", "trainer"];
@@ -78,7 +79,7 @@ test("public guidance routes create no private Double authority or archive and r
   await f.unchanged(assert);
 });
 
-test("Double private shells retain active menu, explicit chat binding, isolated artifacts, and no public recovery", async (t) => {
+test("Double private shells retain active menu, explicit chat binding, isolated artifacts, and no public recovery", posixOnly, async (t) => {
   const f = await fixture(t), s = await listen(t, f);
   const created = await s.api("/api/double", { method: "POST", body: f.manifest });
   assert.equal(created.status, 200);

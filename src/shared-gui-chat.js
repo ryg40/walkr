@@ -3,14 +3,15 @@ import { configuration, connectDoubleClient, request } from "./double-client.js"
 import { installDoubleSessionChat } from "./double-session-chat.js";
 import { installCoinflipChat } from "./coinflip-chat.js";
 import { installTrainerChat } from "./trainer-chat.js";
+import { assertPosixOnly } from "./posix-only.js";
 
 export function installSharedGuiChat(pi, parameters, options = {}) {
   let current, connection, connecting = false, epoch = 0;
   const adapter = installDoubleSessionChat(pi, parameters, options);
   // Per-mode listeners. A saved session of a mode without a listener here is never delivered or guessed.
-  const { pollMs, deliveryTimeoutMs, acceptanceCheckMs, receiptIO } = options;
-  const listeners = { double: adapter, coinflip: installCoinflipChat(pi, { pollMs, deliveryTimeoutMs, acceptanceCheckMs, receiptIO, ...options.coinflip }),
-    trainer: installTrainerChat(pi, { pollMs, deliveryTimeoutMs, acceptanceCheckMs, receiptIO, ...options.trainer }) };
+  const { pollMs, deliveryTimeoutMs, acceptanceCheckMs, receiptIO, platform = process.platform } = options;
+  const listeners = { double: adapter, coinflip: installCoinflipChat(pi, { pollMs, deliveryTimeoutMs, acceptanceCheckMs, receiptIO, platform, ...options.coinflip }),
+    trainer: installTrainerChat(pi, { pollMs, deliveryTimeoutMs, acceptanceCheckMs, receiptIO, platform, ...options.trainer }) };
   const origin = (ctx) => ({ piSessionId: ctx.sessionManager.getSessionId(), piSessionFile: ctx.sessionManager.getSessionFile() });
   async function stop(old = connection) {
     if (old !== connection) return;
@@ -57,6 +58,7 @@ export function installSharedGuiChat(pi, parameters, options = {}) {
     return { active: true, status: "connected", origin: record.origin, path: record.path, sessions };
   }
   async function execute(params, ctx) {
+    assertPosixOnly(platform); // Before any configuration or path access; Core wake has its own tool.
     if (params.action === "status") return status();
     if (params.action === "disconnect") { const record = connection; await stop(record); return status(record); }
     if (params.action === "retry-ack") {
@@ -71,7 +73,7 @@ export function installSharedGuiChat(pi, parameters, options = {}) {
     if (connection || connecting) throw new Error("Disconnect before reconnecting.");
     const seconds = params.timeoutSeconds ?? 240;
     if (!Number.isFinite(seconds) || seconds <= 0 || seconds > 3600) throw new Error("timeoutSeconds must be positive and at most 3600.");
-    const config = configuration(), capturedOrigin = origin(ctx), capturedEpoch = epoch;
+    const config = configuration(process.env, platform), capturedOrigin = origin(ctx), capturedEpoch = epoch;
     connecting = true;
     let server, state;
     try {

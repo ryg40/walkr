@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
+import { tmpRoot } from "./tmp-root.js";
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "human-review-test-"));
+const tmp = fs.mkdtempSync(path.join(tmpRoot, "human-review-test-"));
 process.env.HUMAN_REVIEW_STATE_DIR = path.join(tmp, "state");
 
 const { Store, atomicWrite, resolveAsset } = await import("../src/state.js");

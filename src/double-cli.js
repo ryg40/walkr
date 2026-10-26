@@ -4,6 +4,7 @@ import path from "node:path";
 import { encodeDoubleComparisonId } from "./double-route.js";
 import { SERVER_PROTOCOL } from "./paths.js";
 import { configuration, privatePath, connectDoubleClient, request } from "./double-client.js";
+import { posixOnlyRefusal } from "./posix-only.js";
 
 const HELP = `walkr-double (compatibility: human-review double)
   serve                                      Run a foreground loopback trial server on an ephemeral port
@@ -118,6 +119,8 @@ async function serve({ stateDir }) {
 
 export async function runDouble(args) {
   if (args.length === 0 || args.length === 1 && ["--help", "-h", "help"].includes(args[0])) return stdout(HELP);
+  const refusal = posixOnlyRefusal(); // Before hosted, argument and path checks; help stays available.
+  if (refusal) fail(refusal);
   const config = configuration(); // Hosted rejection precedes even manifest argument/path access.
   const options = parse(args);
   if (options.command === "serve") return serve(config);

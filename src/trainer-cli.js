@@ -7,6 +7,8 @@ import { SERVER_PROTOCOL } from "./paths.js";
 import { privatePath, serverRecord } from "./double-client.js";
 import { canonicalRoot, repoName, sessionName, trainerRoot } from "./trainer-store.js";
 import { encodeDoubleComparisonId } from "./double-route.js";
+import { overlaps } from "./canonical-path.js";
+import { assertPosixOnly, posixOnlyRefusal } from "./posix-only.js";
 
 const HELP = `walkr-trainer (compatibility: walkr trainer)
   serve                                        Run a foreground loopback server on an ephemeral port
@@ -46,13 +48,14 @@ const stdout = (text) => new Promise((resolve) => process.stdout.write(text, res
 const json = (value) => stdout(`${JSON.stringify(value)}\n`);
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export function configuration(env = process.env) {
+export function configuration(env = process.env, platform = process.platform) {
+  assertPosixOnly(platform); // Before any configuration or path access.
   if (env.HUMAN_REVIEW_HOSTED === "1") fail("Trainer is not available in hosted mode.");
   const stateDir = env.HUMAN_REVIEW_STATE_DIR;
   try { canonicalRoot(stateDir); } catch { fail("Trainer requires an explicit canonical absolute HUMAN_REVIEW_STATE_DIR."); }
   const root = trainerRoot(env);
   try { canonicalRoot(root); } catch { fail("HUMAN_REVIEW_TRAINER_ROOT must be a canonical absolute directory."); }
-  if (stateDir === root || stateDir.startsWith(`${root}/`) || root.startsWith(`${stateDir}/`)) {
+  if (overlaps(stateDir, root)) {
     fail("Trainer state and dataset root must be separate, not nested.");
   }
   return { stateDir, root };
@@ -157,6 +160,8 @@ async function serve({ stateDir }) {
 
 export async function runTrainer(args) {
   if (args.length === 0 || args.length === 1 && ["--help", "-h", "help"].includes(args[0])) return stdout(HELP);
+  const refusal = posixOnlyRefusal(); // Before hosted, argument and path checks; help stays available.
+  if (refusal) fail(refusal);
   const config = configuration();
   const options = parse(args);
   if (options.command === "serve") return serve(config);

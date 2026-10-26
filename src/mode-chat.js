@@ -5,6 +5,7 @@ import { configuration, connectDoubleClient, request } from "./double-client.js"
 import { createReceiptVerifier } from "./double-chat-delivery.js";
 import { RECEIPT_LIMITS } from "./double-chat-receipt.js";
 import { encodeDoubleComparisonId } from "./double-route.js";
+import { assertPosixOnly } from "./posix-only.js";
 
 export { hash };
 const same = isDeepStrictEqual;
@@ -15,6 +16,7 @@ const identity = (ctx) => ({ sessionId: ctx.sessionManager.getSessionId(), sessi
  * (method name to route suffix), on /api/double/modes/<mode>/sessions/<id>.
  */
 export function createModeChatClient(mode, label, gets = {}, env = process.env) {
+  assertPosixOnly();
   const config = configuration({ ...env });
   let server;
   function call(id, suffix, signal, body) {
@@ -51,7 +53,7 @@ export function createModeChatClient(mode, label, gets = {}, env = process.env) 
  *   message(packet, receipt)  the custom message that carries the packet
  */
 export function installModeChat(pi, spec, {
-  clientFactory, pollMs = 250, deliveryTimeoutMs = 30000, acceptanceCheckMs = 100, receiptIO,
+  clientFactory, pollMs = 250, deliveryTimeoutMs = 30000, acceptanceCheckMs = 100, receiptIO, platform = process.platform,
 } = {}) {
   let current, epoch = 0;
   const records = new Map();
@@ -215,6 +217,7 @@ export function installModeChat(pi, spec, {
     }
   }
   async function start(params, ctx, ownership) {
+    assertPosixOnly(platform);
     if (!current || !same(identity(ctx), identity(current)) || !["tui", "rpc"].includes(ctx.mode) || !identity(ctx).sessionFile) {
       throw new Error(`${spec.label} requires the active persistent TUI or RPC Pi session.`);
     }
@@ -244,6 +247,7 @@ export function installModeChat(pi, spec, {
     return status(record);
   }
   async function retryAck(sessionId, eventId) {
+    assertPosixOnly(platform);
     const prior = records.get(sessionId), item = prior?.deliveries.get(eventId);
     if (!prior || !live(prior) || !item?.receipt || !["failed_delivery", "ack_pending", "received"].includes(item.status)) {
       throw new Error("Reconnect if needed, then retry-ack the exact recoverable event. Never resend it.");

@@ -17,6 +17,7 @@ Words used below:
 - npm. It comes with Node.js.
 - Git, any current version.
 - A browser on the same computer.
+- On Windows, Walkr supports Core review and setup only. Double, Coinflip, the shared GUI and Trainer need Linux or macOS.
 
 Check the versions:
 

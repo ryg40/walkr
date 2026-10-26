@@ -1,16 +1,16 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import test from "node:test";
 
 import { AGENTS_BLOCK, SKILL_NAMES, installSkills, invocation, isTransientBin, mergeAgentsBlock } from "../src/setup.js";
+import { tmpRoot } from "./tmp-root.js";
 
 const legacySkill = fs.readFileSync(new URL("./fixtures/mode-skills/legacy-skill.txt", import.meta.url), "utf8");
 const legacyAgents = fs.readFileSync(new URL("./fixtures/mode-skills/legacy-agents.txt", import.meta.url), "utf8");
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "walkr-setup-"));
+  const root = fs.mkdtempSync(path.join(tmpRoot, "walkr-setup-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return root;
 }
@@ -247,7 +247,8 @@ test("linked unrelated skills, link cycles and a linked Markdown skill install w
   installSkills(home, { global: true, home });
   for (const name of SKILL_NAMES) assert.ok(fs.existsSync(path.join(agents, name, "SKILL.md")));
   assert.equal(fs.readlinkSync(path.join(claude, "aws-archify")), path.join(external, "aws"));
-  assert.equal(fs.readlinkSync(path.join(agents, "aws-archify")), "../../.claude/skills/aws-archify");
+  // Windows stores a relative link target with backslashes.
+  assert.equal(fs.readlinkSync(path.join(agents, "aws-archify")), path.normalize("../../.claude/skills/aws-archify"));
   assert.deepEqual(snapshot(external), before);
 });
 
@@ -315,15 +316,14 @@ test("a link into the legacy backup directory is refused before the legacy move"
 
 test("link fan-out without a cycle is refused instead of an exponential walk", (t) => {
   const home = fixture(t), external = fixture(t);
-  for (let level = 0; level <= 20; level++) fs.mkdirSync(path.join(external, `d${level}`));
-  for (let level = 0; level < 20; level++) {
+  // 2^11 - 1 directories without a cycle exceed the limit; the default limit is the same code path.
+  for (let level = 0; level <= 10; level++) fs.mkdirSync(path.join(external, `d${level}`));
+  for (let level = 0; level < 10; level++) {
     for (const name of ["a", "b"]) fs.symlinkSync(path.join(external, `d${level + 1}`), path.join(external, `d${level}`, name));
   }
   fs.mkdirSync(path.join(home, ".agents/skills"), { recursive: true });
   fs.symlinkSync(path.join(external, "d0"), path.join(home, ".agents/skills/pack"));
-  const started = Date.now();
-  assert.throws(() => installSkills(home, { global: true, home, dryRun: true }), /more than 20000 directories/);
-  assert.ok(Date.now() - started < 30000);
+  assert.throws(() => installSkills(home, { global: true, home, dryRun: true, discoveryVisitLimit: 200 }), /more than 200 directories/);
 });
 
 test("a link to the filesystem root is refused as above every setup path", (t) => {
