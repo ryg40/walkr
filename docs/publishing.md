@@ -137,10 +137,9 @@ On a first push, the history scan covers the whole snapshot chain. Later pushes 
 
 ## Continuous integration
 
-`.github/workflows/test.yml` runs on each push to `main` and on each pull request. It runs `npm ci --ignore-scripts` and `npm test` on Linux, macOS and Windows, with Node 20 and 22. On Linux and macOS it also runs `python3 -I scripts/test_publish.py`. On Linux it runs the scan of the tree without a local deny list. The actions are pinned by full commit hash, and a comment names the tag of each hash.
+`.github/workflows/test.yml` runs on each push to `main` and on each pull request. It runs `npm ci --ignore-scripts` and `npm test` on Linux and macOS, with Node 20 and 22. It also runs `python3 -I scripts/test_publish.py`. On Linux it runs the scan of the tree without a local deny list. The actions are pinned by full commit hash, and a comment names the tag of each hash.
 
 ## Limits
 
 - The scan finds forms, not meanings. Review each new file before you commit it.
 - The publisher reads Git state only. It does not build, run a service or create a repository.
-- Not verified: the publisher on Windows. The hooks and `scripts/scan.sh` need a POSIX shell.

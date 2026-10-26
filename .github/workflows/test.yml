@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         node: [20, 22]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -29,9 +29,7 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm test
-      # The publisher, the scan and the hooks need a POSIX shell.
-      - if: runner.os != 'Windows'
-        run: python3 -I scripts/test_publish.py
+      - run: python3 -I scripts/test_publish.py
       # A public clone has no local deny list.
       - if: runner.os == 'Linux'
         run: sh scripts/scan.sh --allow-no-local-deny --level fail tree

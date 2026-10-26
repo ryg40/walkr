@@ -1,9 +1,9 @@
 // Double, Coinflip, the shared GUI and Trainer rely on POSIX owner and mode checks, directory
 // fsync and O_NOFOLLOW. Windows has none of them, so these modes refuse there at their entry
-// points instead of running with weaker checks. Core review and setup stay supported.
+// points instead of running with weaker checks. Walkr does not support Windows.
 export const POSIX_ONLY_CODE = "PLATFORM_UNSUPPORTED";
 export const POSIX_ONLY_MESSAGE = "Double, Coinflip, the shared GUI and Trainer need Linux or macOS. " +
-  "On Windows, Walkr supports Core review and walkr-core setup only.";
+  "Walkr does not support Windows.";
 
 /** The refusal message on Windows, else null. `platform` is injectable for tests. */
 export function posixOnlyRefusal(platform = process.platform) {

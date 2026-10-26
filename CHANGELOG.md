@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.2 (2026-10-26)
+
+- Windows is not supported. CI runs on Linux and macOS only.
+
 ## 0.9.1 (2026-10-26)
 
 CI fixes:

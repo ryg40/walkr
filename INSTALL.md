@@ -17,7 +17,7 @@ Words used below:
 - npm. It comes with Node.js.
 - Git, any current version.
 - A browser on the same computer.
-- On Windows, Walkr supports Core review and setup only. Double, Coinflip, the shared GUI and Trainer need Linux or macOS.
+- Linux or macOS. Windows is not supported.
 
 Check the versions:
 
@@ -26,7 +26,7 @@ node --version
 npm --version
 ```
 
-Linux and macOS run `install.sh`. On Windows, use WSL, or follow [the manual steps](#manual-install).
+Run `install.sh`, or follow [the manual steps](#manual-install).
 
 ## Clone
 
@@ -155,7 +155,7 @@ Then delete the clone.
 
 ## Manual install
 
-Use these steps when `install.sh` cannot run, for example on Windows without WSL.
+Use these steps when `install.sh` cannot run.
 
 ```sh
 cd ~/walkr
