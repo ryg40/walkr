@@ -1,0 +1,67 @@
+{
+  "name": "walkr",
+  "version": "0.9.0",
+  "description": "Local review tool for HTML and Markdown with browser feedback, Double, Coinflip, and Trainer modes for coding agents.",
+  "author": "Peter Yang",
+  "contributors": [
+    "ryg40"
+  ],
+  "homepage": "https://github.com/ryg40/walkr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryg40/walkr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ryg40/walkr/issues"
+  },
+  "type": "module",
+  "bin": {
+    "walkr": "src/cli.js",
+    "walkr-core": "src/walkr-core.js",
+    "walkr-double": "src/walkr-double.js",
+    "walkr-coinflip": "src/walkr-coinflip.js",
+    "walkr-trainer": "src/walkr-trainer.js"
+  },
+  "files": [
+    "src",
+    "skills",
+    "prompts",
+    "docs",
+    "integrations/pi",
+    "install.sh",
+    "INSTALL.md",
+    "CHANGELOG.md",
+    "GLOSSARY.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "test": "node --test --test-force-exit --test-timeout=60000",
+    "start": "node src/cli.js"
+  },
+  "keywords": [
+    "html",
+    "markdown",
+    "localhost",
+    "nextjs",
+    "review",
+    "comments",
+    "agent",
+    "claude-code",
+    "codex",
+    "cli"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  },
+  "dependencies": {
+    "css-tree": "3.2.1",
+    "marked": "^18.0.7",
+    "parse5": "8.0.1"
+  },
+  "private": true
+}

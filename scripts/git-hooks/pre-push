@@ -1,0 +1,97 @@
+#!/bin/sh
+# pre-push: guard the refs of a push and scan the commits that it sends.
+# Install with scripts/install-hooks.sh. See docs/secret-handling.md.
+#
+# Guard: to each remote except origin, only these refs may go:
+#   refs/heads/portable      to refs/heads/main or refs/heads/portable
+#   refs/tags/portable-v*    to the same tag name
+# Any other ref, and any delete, is refused. A push to a URL counts as a push
+# to a remote that is not origin.
+#
+# Scan: a secret or a policy finding refuses the push. A host value refuses a
+# push of a portable ref; for other refs it prints a warning. For a new
+# portable ref without a remote-tracking ref, the range is the snapshot chain
+# from the first snapshot; the chain holds no development history.
+
+set -eu
+
+remote=$1
+top=$(git rev-parse --show-toplevel)
+scan=$top/scripts/scan.sh
+
+work=$(mktemp -d "${TMPDIR:-/tmp}/scan-push.XXXXXX")
+trap 'rm -rf "$work"' EXIT
+trap 'exit 130' INT TERM
+: >"$work/commits"
+level=warn
+refused=0
+# Git writes one line for each ref: <local ref> <local sha> <remote ref> <remote sha>.
+while read -r local_ref local_sha remote_ref remote_sha; do
+    portable=no
+    case "$local_ref" in
+        refs/heads/portable)
+            case "$remote_ref" in refs/heads/main|refs/heads/portable) portable=yes ;; esac ;;
+        refs/tags/portable-v*)
+            [ "$remote_ref" != "$local_ref" ] || portable=yes ;;
+    esac
+    case $local_sha in *[!0]*) deleting=no ;; *) deleting=yes ;; esac
+    if [ "$remote" != origin ]; then
+        if [ "$deleting" = yes ]; then
+            echo "pre-push: refused: a delete of $remote_ref toward $remote" >&2
+            refused=1
+            continue
+        fi
+        if [ "$portable" = no ]; then
+            echo "pre-push: refused: $local_ref to $remote_ref toward $remote; only portable refs go to a remote that is not origin" >&2
+            refused=1
+            continue
+        fi
+    fi
+    [ "$deleting" = no ] || continue
+    [ "$portable" = no ] || level=fail
+    if case $remote_sha in *[!0]*) false ;; *) true ;; esac ||
+        ! git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+        if [ "$portable" = yes ]; then
+            # The whole snapshot chain: it starts at the first snapshot.
+            range=$local_sha
+        elif [ -n "$(git for-each-ref --count=1 "refs/remotes/$remote/")" ]; then
+            range="$local_sha --not --remotes=$remote"
+        else
+            range=$local_sha
+        fi
+    else
+        range="$remote_sha..$local_sha"
+    fi
+    set -f
+    # shellcheck disable=SC2086 # range holds Git revisions, never a URL.
+    git rev-list $range >>"$work/commits" || {
+        echo "pre-push: cannot resolve the pushed range; push refused" >&2
+        exit 1
+    }
+    set +f
+done
+
+if [ "$refused" -ne 0 ]; then
+    echo "pre-push: push refused (docs/publishing.md)" >&2
+    exit 1
+fi
+if [ ! -f "$scan" ]; then
+    if git cat-file -e :scripts/scan.sh 2>/dev/null || git cat-file -e HEAD:scripts/scan.sh 2>/dev/null; then
+        echo "pre-push: scripts/scan.sh is not in the working tree, but it is in the index or in HEAD; push refused" >&2
+        exit 1
+    fi
+    echo "pre-push: scripts/scan.sh is not on this branch; no scan" >&2
+    exit 0
+fi
+sort -u "$work/commits" >"$work/unique"
+if [ ! -s "$work/unique" ]; then
+    echo "pre-push: result pass; range empty; level $level" >&2
+    exit 0
+fi
+count=$(wc -l <"$work/unique" | tr -d '[:space:]')
+status=0
+sh "$scan" --level "$level" history --stdin <"$work/unique" || status=1
+if [ "$status" -eq 0 ]; then result=pass; else result=fail; fi
+echo "pre-push: result $result; $count commits; level $level" >&2
+[ "$status" -eq 0 ] || echo "pre-push: push refused (docs/secret-handling.md)" >&2
+exit "$status"

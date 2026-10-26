@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-theme="plum">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trainer · Walkr</title>
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/_walkr/modes.css">
+  <link rel="stylesheet" href="/_walkr/trainer/trainer.css">
+  <script type="module" src="/theme.js"></script>
+</head>
+<body data-trainer data-token="__TOKEN__" data-repo="__REPO__" data-session="__SESSION__">
+<nav class="mode-nav" aria-label="Walkr modes">
+  <a href="/_walkr/modes/core" title="walkr-core" referrerpolicy="no-referrer">Core</a>
+  <a href="/_walkr/modes/double" title="walkr-double" referrerpolicy="no-referrer">Double</a>
+  <a href="/_walkr/modes/coinflip" title="walkr-coinflip" referrerpolicy="no-referrer">Coinflip</a>
+  <a href="/_walkr/modes/trainer" title="walkr-trainer" referrerpolicy="no-referrer" aria-current="page">Trainer</a>
+</nav>
+  <div class="trainer-app">
+    <header class="trainer-bar">
+      <div class="trainer-brand">Walkr</div>
+      <h1 id="title">Trainer</h1>
+      <span class="trainer-id" id="sessionLabel"></span>
+      <label class="theme-control" for="theme">Theme
+        <select id="theme" data-theme-picker>
+          <option value="plum">Fleet / Plum Dusk</option>
+          <option value="night">Fleet / Soft Night</option>
+          <option value="day">Fleet / Soft Day</option>
+          <option value="statue-light">Statue Light</option>
+          <option value="statue-dark">Statue Dark</option>
+          <option value="light">Original Light</option>
+          <option value="dark">Original Dark</option>
+        </select>
+      </label>
+    </header>
+
+    <section class="trainer-progress" aria-label="Progress">
+      <progress id="progressBar" max="1" value="0"></progress>
+      <p id="progressText" role="status" aria-live="polite">Loading…</p>
+      <p class="trainer-task" id="task"></p>
+    </section>
+
+    <div class="trainer-alert" id="alert" role="alert" hidden>
+      <p id="alertText"></p>
+      <button type="button" id="resolve" class="btn-primary" hidden>Retry the same request</button>
+      <button type="button" id="reload" class="btn-ghost">Reload saved state</button>
+    </div>
+
+    <section class="trainer-plan" id="plan" hidden aria-labelledby="planTitle">
+      <h2 id="planTitle">Review the grouping plan</h2>
+      <p id="planExplanation"></p>
+      <ol class="plan-groups" id="planGroups"></ol>
+      <p id="planLeftovers"></p>
+      <p id="planWaiting" role="status" hidden></p>
+      <div class="plan-actions" id="planActions">
+        <button type="button" id="approve" class="btn-primary">Approve plan and start ranking</button>
+        <label for="planNote">Change request</label>
+        <textarea id="planNote" rows="3"></textarea>
+        <button type="button" id="requestChanges" class="btn-ghost">Request changes</button>
+      </div>
+    </section>
+
+    <section class="trainer-rank" id="rank" hidden aria-labelledby="groupTitle">
+      <h2 id="groupTitle"></h2>
+      <p id="groupExplanation"></p>
+      <p class="rank-help">Click the candidates in order: 1 is best. Click a ranked candidate to remove its rank.</p>
+      <div class="candidates" id="candidates"></div>
+      <label for="comment">Comment (optional)</label>
+      <textarea id="comment" rows="2"></textarea>
+      <p id="groupState" role="status"></p>
+      <button type="button" id="save" class="btn-primary" disabled>Save and Next</button>
+    </section>
+
+    <section class="trainer-done" id="done" hidden>
+      <h2>All groups are saved</h2>
+      <p>Votes are saved. Model analysis continues separately and never changes them.</p>
+    </section>
+
+    <section class="trainer-done" id="ended" hidden>
+      <h2>This session is ended</h2>
+      <p>Every saved vote stays in the dataset record. No new plan review or vote is accepted.</p>
+    </section>
+
+    <aside class="trainer-side" aria-label="Groups and leftovers">
+      <h2>Groups</h2>
+      <ol class="group-list" id="groupList"></ol>
+      <h2>Unranked leftovers</h2>
+      <ul id="leftovers"></ul>
+    </aside>
+  </div>
+  <script type="module" src="/_walkr/trainer/app.js"></script>
+</body>
+</html>

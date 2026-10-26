@@ -1,0 +1,36 @@
+## Reviewing files and localhost pages with human-review
+
+After writing an HTML or Markdown file the user will read, open it for them with
+`npx -y human-review <file.html>`. For a locally running web page, open the real
+route with `npx -y human-review http://localhost:3000/path` instead of recreating
+it as a static file. Then run
+`npx -y human-review poll <target>` in the foreground, inside your active
+turn, and stay on it until it prints `{"status":"feedback"}` or
+`{"status":"closed"}`. Do not detach it or start it as a background
+session: nothing wakes you when a detached command finishes. While the review
+is active, answer any incoming user message as commentary and immediately
+resume the foreground poll in the same turn; do not send a final response
+until the poll returns feedback or closed, because a final response ends the
+turn and kills the wait. If your shell tool caps command duration, pass
+`--timeout` a little under the cap and run bounded polls back to back in
+the same active turn. Apply the batch, then run the poll again with
+`--ack`. This is reliable only while the turn stays active: a turn that
+already ended is not woken by Send, and the user has to message you, after
+which `status` and `poll` pick the batch up.
+`{"status":"closed"}` means the review is over (ended, tab closed, or none
+open); do not poll again, and if its `unsent` counts are not zero, tell the user
+in one line. `{"status":"superseded"}` means a newer poll of yours owns the
+wait; stop this one silently. `npx -y human-review status <target>` reports
+instantly whether feedback is already waiting, without blocking.
+
+The batch groups feedback by page under `pages`, so fix every page listed. Items
+under `edits` are changes the user already made: `after` is their exact wording,
+so carry it across verbatim and never revert it — and if the HTML was generated
+from MDX or Markdown, apply it to the source too. Markdown files open rendered
+and are never written by human-review: apply their comments and edits to the
+Markdown source, keeping its syntax. There is no reply channel; the user sees
+your work when the page reloads. For a localhost page, direct edits and deletions
+arrive with `kind: "url"`; find and update the matching MDX, TSX, template, or
+component source. Never write the rendered HTTP response over project source.
+A page with `edits_saved: true` already has those edits on disk: re-read the
+file and make targeted changes only, never regenerate it from an older copy.

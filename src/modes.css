@@ -1,0 +1,41 @@
+/* Shared shell navigation uses the existing seven theme palettes. */
+.mode-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 12px;
+  margin: 0 0 12px;
+  border-bottom: 1px solid var(--hair);
+  background: var(--rail);
+  color: var(--txt);
+  font: 13px/1.5 var(--sans);
+}
+.mode-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--txt);
+  text-decoration: none;
+}
+.mode-nav a:hover { background: var(--soft); }
+:root .mode-nav a[aria-current="page"] {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border-color: var(--btn-bg);
+  font-weight: 700;
+}
+.mode-nav a:focus-visible { outline: 2px solid var(--focus, var(--accent)); outline-offset: 2px; }
+body[data-core-shell] { display: flex; flex-direction: column; }
+body[data-core-shell] > .mode-nav { flex: none; margin: 0; }
+body[data-core-shell] > .app { position: relative; flex: 1; min-height: 0; height: auto; }
+body[data-core-shell] .handle { position: absolute; }
+.double-bar { flex-wrap: wrap; }
+.double-bar .mode-nav { flex: 1 0 100%; margin: 0; padding: 0 0 6px; }
+@media (max-width: 480px) {
+  .mode-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 6px 8px; }
+  .mode-nav a { min-width: 0; padding: 6px 8px; }
+}

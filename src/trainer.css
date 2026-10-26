@@ -1,0 +1,68 @@
+/* Trainer page. Uses the shared theme variables; all seven themes apply. */
+body { margin: 0; background: var(--canvas); color: var(--txt); font: 14px/1.5 var(--sans); }
+.trainer-app {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 280px);
+  grid-template-areas: "bar bar" "progress side" "alert side" "plan side" "rank side" "done side";
+  align-content: start;
+  gap: 12px;
+  padding: 0 16px 24px;
+}
+.trainer-bar { grid-area: bar; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.trainer-brand { font-weight: 700; color: var(--brand, var(--accent)); }
+.trainer-bar h1 { margin: 0; font-size: 20px; }
+.trainer-id { color: var(--mute); font-family: var(--mono); font-size: 12px; }
+.theme-control { margin-left: auto; color: var(--mute); }
+.trainer-progress { grid-area: progress; }
+.trainer-progress progress { width: 100%; accent-color: var(--accent); }
+.trainer-task { white-space: pre-wrap; }
+.trainer-alert { grid-area: alert; padding: 8px 12px; border: 1px solid var(--danger); background: var(--danger-soft); border-radius: 7px; }
+.trainer-plan { grid-area: plan; }
+.trainer-rank { grid-area: rank; }
+.trainer-done { grid-area: done; }
+.trainer-side { grid-area: side; border-left: 1px solid var(--hair); padding-left: 12px; }
+.trainer-side h2, .trainer-plan h2, .trainer-rank h2 { font-size: 15px; margin: 8px 0; }
+.plan-actions { display: grid; gap: 6px; max-width: 640px; }
+.candidates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+.candidate {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 6px;
+  min-height: 160px;
+  padding: 10px;
+  text-align: left;
+  color: var(--txt);
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-radius: 9px;
+  cursor: pointer;
+  font: inherit;
+}
+.candidate[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.candidate:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.candidate:disabled { cursor: default; }
+.rank-badge {
+  justify-self: start;
+  min-width: 32px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--chip);
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+.candidate[aria-pressed="true"] .rank-badge { background: var(--btn-bg); color: var(--btn-fg); }
+.candidate-head { font-weight: 600; }
+.candidate-content { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.45 var(--mono); max-height: 50vh; overflow: auto; }
+.group-list { padding-left: 18px; }
+.group-list button { all: unset; cursor: pointer; }
+.group-list button[aria-current="true"] { font-weight: 700; }
+textarea { width: 100%; box-sizing: border-box; background: var(--input-bg); color: var(--txt); border: 1px solid var(--hair); border-radius: 6px; font: inherit; }
+.btn-primary { background: var(--btn-bg); color: var(--btn-fg); border: 1px solid var(--btn-bg); border-radius: 7px; padding: 8px 14px; font: inherit; cursor: pointer; }
+.btn-primary:disabled { opacity: 0.5; cursor: default; }
+.btn-ghost { background: transparent; color: var(--txt); border: 1px solid var(--strong-border); border-radius: 7px; padding: 8px 14px; font: inherit; cursor: pointer; }
+@media (max-width: 760px) {
+  .trainer-app { grid-template-columns: 1fr; grid-template-areas: "bar" "progress" "alert" "plan" "rank" "done" "side"; }
+  .candidates { grid-template-columns: 1fr; }
+  .trainer-side { border-left: 0; padding-left: 0; }
+}

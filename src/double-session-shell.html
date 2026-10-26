@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en" data-theme="plum">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Double · Walkr</title>
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/double.css">
+  <link rel="stylesheet" href="/_walkr/modes.css">
+</head>
+<body data-double-session-shell data-session="__DOUBLE_SESSION_ID__" data-token="__TOKEN__">
+  <div class="double-app">
+    <header class="double-bar">
+<nav class="mode-nav" aria-label="Walkr modes">
+  <a href="/_walkr/modes/core" title="walkr-core" referrerpolicy="no-referrer">Core</a>
+  <a href="/_walkr/modes/double" title="walkr-double" referrerpolicy="no-referrer" aria-current="page">Double</a>
+  <a href="/_walkr/modes/coinflip" title="walkr-coinflip" referrerpolicy="no-referrer">Coinflip</a>
+  <a href="/_walkr/modes/trainer" title="walkr-trainer" referrerpolicy="no-referrer">Trainer</a>
+</nav>
+      <div class="double-brand">Walkr</div>
+      <h1 class="double-title" id="title">Double</h1>
+      <span class="session-state" id="sessionState"></span>
+      <div class="save-line saving" id="status" role="status" aria-live="polite"><span class="dot"></span><span id="statusText">Loading…</span></div>
+      <label class="theme-control" for="theme">Theme
+        <select id="theme" data-theme-picker>
+          <option value="plum">Fleet / Plum Dusk</option>
+          <option value="night">Fleet / Soft Night</option>
+          <option value="day">Fleet / Soft Day</option>
+          <option value="statue-light">Statue Light</option>
+          <option value="statue-dark">Statue Dark</option>
+          <option value="light">Original Light</option>
+          <option value="dark">Original Dark</option>
+        </select>
+      </label>
+    </header>
+
+    <div class="double-alert" id="alert" role="alert" hidden>
+      <p id="alertText"></p>
+      <div class="alert-actions">
+        <button type="button" id="alertRetry" class="btn-primary">Retry</button>
+        <button type="button" id="alertReload" class="btn-ghost">Reload saved state</button>
+        <button type="button" id="alertDismiss" class="btn-ghost">Dismiss</button>
+      </div>
+    </div>
+
+    <main class="double-panes" aria-label="Comparison panes">
+      <section class="pane" data-pane="left" aria-labelledby="pane-label-left">
+        <h2 class="pane-label" id="pane-label-left">
+          <span class="pane-side">Left</span>
+          <span class="pane-name" id="pane-name-left"></span>
+          <span class="pane-count" id="pane-count-left"></span>
+        </h2>
+        <div class="pane-stage" id="stage-left">
+          <iframe id="frame-left" title="Left pane" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+          <p class="pane-missing" id="missing-left" hidden>This pane has no review copy address.</p>
+        </div>
+      </section>
+      <section class="pane" data-pane="right" aria-labelledby="pane-label-right">
+        <h2 class="pane-label" id="pane-label-right">
+          <span class="pane-side">Right</span>
+          <span class="pane-name" id="pane-name-right"></span>
+          <span class="pane-count" id="pane-count-right"></span>
+        </h2>
+        <div class="pane-stage" id="stage-right">
+          <iframe id="frame-right" title="Right pane" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+          <p class="pane-missing" id="missing-right" hidden>This pane has no review copy address.</p>
+        </div>
+      </section>
+    </main>
+
+    <aside class="double-rail" aria-label="Feedback and session controls">
+      <div class="rail-scroll">
+        <h2 class="section">Components</h2>
+        <p class="selection-legend">Hover over a component to show its corners. Green: kept. Red: discarded. Gray: not selected. Discards stay visible until Done.</p>
+        <details class="pane-controls" id="controls-left" open>
+          <summary>Left <span class="dim" id="controls-count-left"></span></summary>
+          <p class="controls-note" id="controls-note-left">Controls appear after the saved state loads.</p>
+          <ul class="controls-list" id="controls-list-left" aria-label="Left pane components"></ul>
+        </details>
+        <details class="pane-controls" id="controls-right" open>
+          <summary>Right <span class="dim" id="controls-count-right"></span></summary>
+          <p class="controls-note" id="controls-note-right">Controls appear after the saved state loads.</p>
+          <ul class="controls-list" id="controls-list-right" aria-label="Right pane components"></ul>
+        </details>
+        <div class="rail-head history-heading">
+          <h2 class="section">Saved feedback</h2>
+          <span class="dim" id="historyCount">0</span>
+        </div>
+        <ol class="history" id="history"></ol>
+        <p class="empty" id="historyEmpty">No comments or discards yet. Open a component comment field to add feedback.</p>
+      </div>
+      <div class="rail-foot">
+        <div id="overallCommentPanel" class="overall-comment">
+          <label for="overallComment">Overall comment</label>
+          <textarea id="overallComment" rows="3" placeholder="What should the next round change?" disabled></textarea>
+          <button type="button" id="saveOverallComment" class="btn-primary" disabled>Save comment</button>
+        </div>
+        <div class="session-alert" id="sessionAlert" role="alert" hidden>
+          <p id="sessionAlertText"></p>
+          <div class="alert-actions">
+            <button type="button" id="sessionRetry" class="btn-primary">Retry</button>
+            <button type="button" id="sessionDismiss" class="btn-ghost">Dismiss</button>
+          </div>
+        </div>
+        <p class="session-note" id="sessionNote" role="status" aria-live="polite"></p>
+        <p class="draft-note" id="draftNote" hidden></p>
+        <p class="summary" id="summary"></p>
+        <button type="button" id="next" class="send" disabled hidden>Next Round</button>
+        <button type="button" id="retryGeneration" class="send" disabled hidden>Retry generation</button>
+        <button type="button" id="endOpen" class="btn-ghost end-open" disabled hidden>Done</button>
+        <fieldset class="end-panel" id="endPanel" hidden>
+          <legend>Choose your final page</legend>
+          <p class="end-help">Choose the page to return to the chat. Red-marked components are removed from that page. The chat also gets every round's feedback history. No keeper-only page is made.</p>
+          <label class="end-option"><input type="radio" name="endPane" value="left"> <span class="pane-side">Left</span> <span id="endLabel-left"></span></label>
+          <label class="end-option"><input type="radio" name="endPane" value="right"> <span class="pane-side">Right</span> <span id="endLabel-right"></span></label>
+          <p class="end-notice" id="endNotice" role="alert" hidden></p>
+          <div class="alert-actions">
+            <button type="button" id="endConfirm" class="btn-danger" disabled>Done: send this page</button>
+            <button type="button" id="endCancel" class="btn-ghost">Cancel</button>
+          </div>
+        </fieldset>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="/double-session-shell.js"></script>
+</body>
+</html>

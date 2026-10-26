@@ -1,0 +1,14 @@
+# Allowed host values: exact URLs that may stay in tracked files.
+#
+# scripts/scan.sh applies this list after the deny lists
+# (scripts/host-values.deny and the untracked .local/host-values.deny). It
+# drops a deny-list finding when the line contains the pattern only inside
+# one of these URLs. The same pattern in other text of the line is still a
+# finding. The list hides no secret finding, no policy finding and no finding
+# of scripts/host-values.regex (docs/secret-handling.md).
+#
+# The list holds no URL now. Add a line only after a decision of the
+# maintainer.
+#
+# Format: one exact https URL for each line, case-sensitive. A line that
+# starts with "#" is a comment. Quotes, backslashes and blanks are not allowed.

@@ -1,0 +1,135 @@
+/* Original Human Review palettes remain available without Fleet overrides. */
+:root {
+  color-scheme: light;
+  --canvas: #eceae4;
+  --rail: #fbfaf7;
+  --card: #ffffff;
+  --card-border: #e9e7e0;
+  --hair: #e4e2db;
+  --hair-2: #eceae4;
+  --dash: #e0ddd4;
+  --strong-border: #d9d5c9;
+  --txt: #26241e;
+  --strong-txt: #1b1a16;
+  --mute: #8b877d;
+  --mute-2: #6b6862;
+  --faint: #b6b2a8;
+  --faint-2: #a8a49a;
+  --soft: #f2f0ea;
+  --chip: #f4f2ec;
+  --input-bg: #fdfcfa;
+  --focus: #c2beb4;
+  --danger: #b23b2e;
+  --danger-soft: #f6ecea;
+  --amber: #c99500;
+  --green: #7d9370;
+  --btn-bg: #1b1a16;
+  --btn-fg: #fbfaf7;
+  --rail-w: 352px;
+  --accent: #255441;
+  --accent-soft: #e8eadf;
+  --shadow: #0002;
+  --sans: "Avenir Next", "Nunito Sans", "Nunito", "Lato", "Trebuchet MS", "Ubuntu", "Cantarell", sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", "SF Mono", "Menlo", "Consolas", monospace;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #171614;
+  --rail: #1f1e1b;
+  --card: #262420;
+  --card-border: #34322d;
+  --hair: #2f2d29;
+  --hair-2: #2a2825;
+  --dash: #3a3833;
+  --strong-border: #403d37;
+  --txt: #eae7e0;
+  --strong-txt: #f4f1ea;
+  --mute: #9c968a;
+  --mute-2: #a8a29a;
+  --faint: #6e6961;
+  --faint-2: #837d74;
+  --soft: #2c2a26;
+  --chip: #2e2c27;
+  --input-bg: #1c1b18;
+  --focus: #4d4941;
+  --danger: #d9705f;
+  --danger-soft: #3a2320;
+  --amber: #d9a520;
+  --green: #8ea37f;
+  --btn-bg: #f0ede6;
+  --btn-fg: #1b1a16;
+  --accent: #8ea37f;
+  --accent-soft: #2c2a26;
+}
+/* TenantFleet dashboard palette: Plum Dusk, Soft Night, and Soft Day. */
+:root[data-theme="plum"] {
+  color-scheme: dark;
+  --canvas: #17131e; --rail: #1c1725; --card: #201a2a;
+  --card-border: #3d3252; --hair: #3d3252; --hair-2: #2e2640;
+  --dash: #4d4066; --strong-border: #4d4066;
+  --txt: #f2eef6; --strong-txt: #f2eef6; --mute: #c6bbd4;
+  --mute-2: #c6bbd4; --faint: #a89bba; --faint-2: #a89bba;
+  --soft: #271f34; --chip: #302849; --input-bg: #130f19;
+  --focus: #bba6f6; --danger: #ffb4c1; --danger-soft: #452331;
+  --amber: #f2d49a; --green: #7fdab5;
+  --btn-bg: #bba6f6; --btn-fg: #18121f;
+  --accent: #d4c7fc; --accent-soft: #302849; --shadow: #0009;
+}
+:root[data-theme="night"] {
+  color-scheme: dark;
+  --canvas: #111924; --rail: #151e2c; --card: #182231;
+  --card-border: #2f3e55; --hair: #2f3e55; --hair-2: #263449;
+  --dash: #3d5070; --strong-border: #3d5070;
+  --txt: #eef1ea; --strong-txt: #eef1ea; --mute: #b9c5d3;
+  --mute-2: #b9c5d3; --faint: #98a8bb; --faint-2: #98a8bb;
+  --soft: #1e2a3b; --chip: #1f3b3f; --input-bg: #0e1520;
+  --focus: #86d6c6; --danger: #ffadb3; --danger-soft: #402532;
+  --amber: #f0d197; --green: #86d6c6;
+  --btn-bg: #86d6c6; --btn-fg: #0f1a24;
+  --accent: #a9e6da; --accent-soft: #1f3b3f; --shadow: #0009;
+}
+:root[data-theme="day"] {
+  color-scheme: light;
+  --canvas: #edf1f5; --rail: #e5eaf0; --card: #ffffff;
+  --card-border: #cdd6e0; --hair: #cdd6e0; --hair-2: #e0e6ed;
+  --dash: #c3cdd8; --strong-border: #c3cdd8;
+  --txt: #1b2532; --strong-txt: #1b2532; --mute: #495868;
+  --mute-2: #495868; --faint: #566476; --faint-2: #566476;
+  --soft: #f5f7fa; --chip: #d3eee8; --input-bg: #f8fafc;
+  --focus: #0c6a5b; --danger: #ac2239; --danger-soft: #fbe1e5;
+  --amber: #865600; --green: #0c6a5b;
+  --btn-bg: #5cc2ae; --btn-fg: #13202b;
+  --accent: #0c6a5b; --accent-soft: #d3eee8; --shadow: #1b25322e;
+}
+/* Statue palettes draw on Liberty Mutual's yellow, navy, teal, and cool whites. */
+:root[data-theme="statue-light"] {
+  color-scheme: light;
+  --canvas: #f2fbfb; --rail: #f6fbfc; --card: #ffffff;
+  --card-border: #d2e2e6; --hair: #d2e2e6; --hair-2: #e4eef0;
+  --dash: #7c929e; --strong-border: #587781;
+  --txt: #343741; --strong-txt: #1a1446; --mute: #52616b;
+  --mute-2: #52616b; --faint: #586773; --faint-2: #586773;
+  --soft: #eaf6f7; --chip: #e0f2f4; --input-bg: #f2fbfb;
+  --focus: #1a1446; --danger: #b42336; --danger-soft: #fff0f1;
+  --amber: #856000; --green: #007a65;
+  --btn-bg: #007b92; --btn-fg: #ffffff;
+  --accent: #006e82; --accent-soft: #e0f2f4; --shadow: #1a14461a;
+  --brand: #ffd000; --brand-ink: #1a1446;
+}
+:root[data-theme="statue-dark"] {
+  color-scheme: dark;
+  --canvas: #0e1224; --rail: #141b31; --card: #1b2540;
+  --card-border: #34455f; --hair: #34455f; --hair-2: #2a3952;
+  --dash: #7288a3; --strong-border: #7288a3;
+  --txt: #edf4f7; --strong-txt: #ffffff; --mute: #bdcbd9;
+  --mute-2: #bdcbd9; --faint: #a1b2c8; --faint-2: #a1b2c8;
+  --soft: #222f49; --chip: #133b49; --input-bg: #10192d;
+  --focus: #ffd000; --danger: #ffb9b3; --danger-soft: #482936;
+  --amber: #ffd000; --green: #87d8bd;
+  --btn-bg: #ffd000; --btn-fg: #1a1446;
+  --accent: #8cdeea; --accent-soft: #133b49; --shadow: #0006;
+  --brand: #ffd000; --brand-ink: #1a1446;
+}
+.theme-control { display: flex; align-items: center; gap: 8px; color: var(--mute-2); font: 12px/1.4 var(--sans); }
+.theme-control select { min-width: 0; max-width: 100%; padding: 6px 9px; border: 1px solid var(--hair); border-radius: 10px; background: var(--card); color: var(--txt); font: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }

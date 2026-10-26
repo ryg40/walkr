@@ -1,0 +1,20 @@
+node_modules/
+*.log
+*.tgz
+.DS_Store
+
+# Local review state, never committed
+.human-review/
+
+# Claude Design runtime, not part of the product
+design-ref/support.js
+videos/
+
+# Local launch and review artifacts
+output/
+
+# Host deployment state and approved project mounts
+.local/
+workspace/
+compose.projects.yml
+__pycache__/

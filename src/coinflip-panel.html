@@ -1,0 +1,32 @@
+<section class="coinflip" id="coinflip" aria-labelledby="coinflipHeading" hidden>
+  <h2 id="coinflipHeading">Coinflip</h2>
+  <p class="coinflip-status" id="coinflipStatus" role="status" aria-live="polite"></p>
+  <div class="coinflip-pair">
+    <section class="coinflip-candidate" data-side="left" aria-labelledby="coinflipLabel-left">
+      <h3 id="coinflipLabel-left"><span class="pane-side">Left</span> <span class="coinflip-badge" id="coinflipBadge-left" hidden></span></h3>
+      <p class="coinflip-description" id="coinflipDescription-left"></p>
+      <div class="coinflip-stage"><div class="coinflip-canvas">
+        <iframe id="coinflipFrame-left" title="Left candidate" sandbox="" referrerpolicy="no-referrer"></iframe>
+        <button type="button" class="coinflip-pick" id="coinflipChoose-left">Choose the left candidate</button>
+      </div></div>
+    </section>
+    <section class="coinflip-candidate" data-side="right" aria-labelledby="coinflipLabel-right">
+      <h3 id="coinflipLabel-right"><span class="pane-side">Right</span> <span class="coinflip-badge" id="coinflipBadge-right" hidden></span></h3>
+      <p class="coinflip-description" id="coinflipDescription-right"></p>
+      <div class="coinflip-stage"><div class="coinflip-canvas">
+        <iframe id="coinflipFrame-right" title="Right candidate" sandbox="" referrerpolicy="no-referrer"></iframe>
+        <button type="button" class="coinflip-pick" id="coinflipChoose-right">Choose the right candidate</button>
+      </div></div>
+    </section>
+  </div>
+  <label for="coinflipNote">Optional note, saved with your next choice</label>
+  <textarea id="coinflipNote" rows="2"></textarea>
+  <div class="alert-actions">
+    <button type="button" id="coinflipRetry" class="btn-primary" hidden>Retry generation</button>
+    <button type="button" id="coinflipRecover" class="btn-ghost" hidden>Mark interrupted attempt failed</button>
+    <button type="button" id="coinflipResolve" class="btn-ghost" hidden>Resolve saved request</button>
+    <button type="button" id="coinflipStop" class="btn-ghost" hidden>Stop</button>
+    <button type="button" id="coinflipSubmit" class="btn-primary" hidden>Submit winner</button>
+  </div>
+  <details><summary>Saved choices</summary><ol id="coinflipChoices"></ol></details>
+</section>

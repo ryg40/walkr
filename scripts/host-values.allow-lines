@@ -1,0 +1,5 @@
+# Accepted host-value lines. Format: <path><TAB><sha256 of the exact line text without the line end>.
+# The maintainer accepts each line by hash, and docs/secret-handling.md gives the reason.
+# A changed line is a finding again. The publisher warns when a file of this list
+# changed since the last snapshot. The list holds no line now.
+# Compute a hash: sed -n '<line>p' <path> | tr -d '\n' | sha256sum   (macOS: shasum -a 256)

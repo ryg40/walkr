@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-theme="plum">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Walkr</title>
+<link rel="stylesheet" href="/theme.css">
+<link rel="stylesheet" href="/home.css">
+<script type="module" src="/theme.js"></script>
+  <link rel="stylesheet" href="/_walkr/modes.css">
+</head>
+<body>
+<main>
+<nav class="mode-nav" aria-label="Walkr modes">
+  <a href="/_walkr/modes/core" title="walkr-core" referrerpolicy="no-referrer" aria-current="page">Core</a>
+  <a href="/_walkr/modes/double" title="walkr-double" referrerpolicy="no-referrer">Double</a>
+  <a href="/_walkr/modes/coinflip" title="walkr-coinflip" referrerpolicy="no-referrer">Coinflip</a>
+  <a href="/_walkr/modes/trainer" title="walkr-trainer" referrerpolicy="no-referrer">Trainer</a>
+</nav>
+  <div class="home-tools">
+    <span class="workspace-mark">Walkr</span>
+    <label class="theme-control" for="theme">Theme
+      <select id="theme" data-theme-picker>
+        <option value="plum">Fleet / Plum Dusk</option>
+        <option value="night">Fleet / Soft Night</option>
+        <option value="day">Fleet / Soft Day</option>
+        <option value="statue-light">Statue Light</option>
+        <option value="statue-dark">Statue Dark</option>
+        <option value="light">Original Light</option>
+        <option value="dark">Original Dark</option>
+      </select>
+    </label>
+  </div>
+  <header>
+    <span class="label">Private workspace / Pi agent</span>
+    <h1>Walkr</h1>
+    <p>Edit HTML and review Markdown. Send your comments to Pi as one batch.</p>
+  </header>
+  <div class="home-grid">
+    <section class="reviews">
+      <h2>Active reviews</h2>
+      <ul>__REVIEWS__</ul>
+    </section>
+    <section class="open-guide">
+      <h2>Open Core from Pi</h2>
+      <p><code>walkr-core /absolute/path/to/file.html</code></p>
+      <p>Executable aliases: <code>walkr</code> and <code>human-review</code>. After approved skill installation, use <code>/walkr</code> or <code>/skill:walkr-core</code>. The old <code>/human-review</code> skill is retired.</p>
+      <p>Use isolated review copies in <code>/srv/walkr/workspace</code>.</p>
+      <aside>HTML edits save to the review copy. Markdown changes remain feedback until Pi applies them. Click Send. If no agent is collecting it, paste the handoff message into the Pi chat that started the review.</aside>
+    </section>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" data-theme="plum">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Walkr</title>
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/chrome.css">
+  <link rel="stylesheet" href="/_walkr/modes.css">
+</head>
+<body data-core-shell data-session="__SESSION_ID__" data-token="__TOKEN__">
+  <nav class="mode-nav" aria-label="Walkr modes">
+  <a href="/_walkr/modes/core" title="walkr-core" referrerpolicy="no-referrer" aria-current="page">Core</a>
+  <a href="/_walkr/modes/double" title="walkr-double" referrerpolicy="no-referrer">Double</a>
+  <a href="/_walkr/modes/coinflip" title="walkr-coinflip" referrerpolicy="no-referrer">Coinflip</a>
+  <a href="/_walkr/modes/trainer" title="walkr-trainer" referrerpolicy="no-referrer">Trainer</a>
+</nav>
+  <div class="app">
+    <main class="stage">
+      <iframe
+        id="frame"
+        title="Artifact under review"
+        sandbox="allow-scripts allow-forms allow-modals"></iframe>
+    </main>
+
+    <button type="button" id="handle" class="handle" title="Hide comments panel" aria-label="Hide comments panel">›</button>
+
+    <aside class="rail" id="rail" aria-label="Review feedback">
+      <div class="rail-brand">Walkr</div>
+      <label class="theme-control" for="theme">Theme
+        <select id="theme" data-theme-picker>
+          <option value="plum">Fleet / Plum Dusk</option>
+          <option value="night">Fleet / Soft Night</option>
+          <option value="day">Fleet / Soft Day</option>
+          <option value="statue-light">Statue Light</option>
+          <option value="statue-dark">Statue Dark</option>
+          <option value="light">Original Light</option>
+          <option value="dark">Original Dark</option>
+        </select>
+      </label>
+      <div class="rail-scroll">
+        <div class="rail-head">
+          <span class="section">Feedback</span>
+          <span class="dim" id="count">0</span>
+        </div>
+
+        <div id="leftover" class="leftover" hidden>
+          <p id="leftoverText"></p>
+          <div class="leftover-actions">
+            <button type="button" id="leftoverKeep" class="btn-ghost">Keep</button>
+            <button type="button" id="leftoverDiscard" class="btn-ghost danger-hover">Discard</button>
+          </div>
+        </div>
+
+        <div id="compose" hidden>
+          <div class="compose">
+            <div class="compose-head">
+              <span class="chip" id="composeKind">Selection</span>
+              <span class="dim">Click to write · Esc to dismiss</span>
+            </div>
+            <p class="quote" id="composeQuote"></p>
+            <textarea id="composeText" rows="3" placeholder="What should change?"></textarea>
+            <div class="compose-actions">
+              <button type="button" id="composeAdd" class="btn-primary">Add comment <span class="key">⏎</span></button>
+              <button type="button" id="composeCancel" class="btn-ghost">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="cards" class="cards"></div>
+
+        <div id="empty" class="empty">Select text or click an element to comment on it</div>
+
+        <section id="othersBox" hidden>
+          <div class="rail-head tight">
+            <span class="section">Other pages</span>
+            <span class="dim" id="othersCount">0</span>
+          </div>
+          <div class="edit-list" id="othersList"></div>
+        </section>
+
+        <section id="editsBox" hidden>
+          <div class="rail-head tight">
+            <span class="section">Your edits</span>
+            <span class="dim" id="editCount">0</span>
+            <button type="button" id="revert" class="link-btn danger-hover">Revert all</button>
+          </div>
+          <div class="save-line" id="saveLine"><span class="dot"></span><span id="saveText"></span></div>
+          <div class="edit-list" id="editList"></div>
+        </section>
+      </div>
+
+      <div class="rail-foot">
+        <textarea id="note" rows="2" placeholder="Overall note…"></textarea>
+        <button type="button" id="send" class="send" disabled>Nothing to send yet</button>
+        <div class="agent-line" id="agentLine" hidden><span class="dot amber"></span><span id="agentText"></span></div>
+        <button type="button" id="wakeRelease" class="link-btn danger-hover" hidden title="Release the Pi chat that wakes on Send">Disconnect the Pi chat</button>
+        <div class="handoff" id="handoff" hidden>
+          <p class="handoff-title" id="handoffTitle">Sent and saved. No agent is collecting it.</p>
+          <p class="handoff-body" id="handoffBody">Paste this into the Pi chat that started the review:</p>
+          <div class="handoff-cmd"><code id="handoffCmd"></code></div>
+          <button type="button" id="handoffCopy" class="btn-ghost">Copy prompt</button>
+        </div>
+        <button type="button" id="endReview" class="end-review" title="Stop this review and release the waiting agent">End review</button>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="/chrome.js"></script>
+</body>
+</html>

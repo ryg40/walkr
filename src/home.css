@@ -1,0 +1,46 @@
+/* Original hosted landing-page style. Fleet and Statue overrides remain selectable. */
+:root { --paper: #f6f1e7; --ink: #202921; --home-green: #255441; --line: #c9cabb; --home-wash: #dee8d6; --home-code: #e8eadf; }
+:root[data-theme="dark"] { --paper: #171614; --ink: #eae7e0; --home-green: #8ea37f; --line: #403d37; --home-wash: #262c23; --home-code: #2c2a26; }
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: radial-gradient(ellipse at top right, var(--home-wash), transparent 65%), var(--paper); font: 18px/1.6 Georgia, serif; min-height: 100vh; }
+main { max-width: 880px; margin: auto; padding: 8vh 24px; }
+header { border-top: 4px solid var(--home-green); padding-top: 24px; }
+.label { font: 12px/1.4 monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--home-green); }
+h1 { font-weight: 400; font-size: clamp(40px,7vw,76px); line-height: 1.05; letter-spacing: -.04em; margin: 22px 0; }
+p { max-width: 650px; }
+section { border-top: 1px solid var(--line); margin-top: 44px; padding-top: 20px; }
+h2 { font-size: 26px; font-weight: 400; }
+a { color: var(--home-green); text-underline-offset: 4px; }
+li { padding: 8px 0; overflow-wrap: anywhere; }
+code { font: 14px/1.7 monospace; overflow-wrap: anywhere; background: var(--home-code); padding: 4px 7px; }
+aside { font-size: 15px; border-left: 3px solid var(--home-green); padding-left: 16px; margin-top: 32px; }
+.home-tools { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.workspace-mark { display: none; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) body { color: var(--txt); background: radial-gradient(ellipse at 90% 0%, var(--accent-soft), transparent 60%), var(--canvas); font: 14px/1.5 var(--sans); }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) main { max-width: 1180px; padding: 18px 24px 36px; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) .home-tools { min-height: 44px; margin-bottom: 24px; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) .workspace-mark { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 16px; }
+.workspace-mark::before { content: ""; width: 9px; height: 9px; background: var(--green); border-radius: 50%; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) header { padding: 24px 28px; border: 1px solid var(--hair); border-radius: 16px; background: linear-gradient(120deg, var(--card), var(--rail)); }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) .label { color: var(--accent); font: 12px/1.5 var(--mono); letter-spacing: .03em; text-transform: none; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) h1 { font-size: clamp(32px,5vw,54px); font-weight: 700; letter-spacing: -.035em; margin: 12px 0; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) header p { color: var(--mute); margin-bottom: 0; font-size: 16px; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) section { min-width: 0; border: 1px solid var(--hair); border-radius: 14px; background: var(--card); margin: 0; padding: 18px 20px; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) h2 { font-size: 14px; font-weight: 700; margin: 0 0 14px; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) h2::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 50%; background: var(--btn-bg); }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) ul { padding: 0; margin: 0; list-style: none; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) li { border-top: 1px solid var(--hair-2); padding: 12px 0; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) a { display: block; color: var(--accent); }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) code { color: var(--txt); background: var(--input-bg); font: 12px/1.7 var(--mono); border-radius: 6px; }
+:root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) aside { color: var(--mute); border-color: var(--green); margin-top: 20px; font-size: 12.5px; }
+:root:is([data-theme="statue-light"], [data-theme="statue-dark"]) header { border-top: 4px solid var(--brand); }
+:root:is([data-theme="statue-light"], [data-theme="statue-dark"]) .workspace-mark { padding: 7px 13px; border-radius: 12px 3px 12px 3px; background: var(--brand); color: var(--brand-ink); }
+:root:is([data-theme="statue-light"], [data-theme="statue-dark"]) .workspace-mark::before { background: var(--brand-ink); }
+@media (max-width: 720px) {
+  main { padding: 24px 16px; }
+  :root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) main { padding: 12px 16px 24px; }
+  :root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) .home-grid { grid-template-columns: 1fr; }
+  :root:is([data-theme="plum"], [data-theme="night"], [data-theme="day"], [data-theme="statue-light"], [data-theme="statue-dark"]) header { padding: 20px; }
+  .theme-control select { min-height: 40px; }
+}

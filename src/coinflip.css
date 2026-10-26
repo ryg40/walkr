@@ -1,0 +1,21 @@
+/* Coinflip panel in the shared GUI: two whole candidates, a marked winner, Stop and Submit. */
+[data-shared-gui] .coinflip { grid-area: panes; grid-column: 1 / -1; display: flex; flex-direction: column; min-height: 0; padding: 12px 20px; gap: 8px; overflow: auto; }
+.coinflip h2 { margin: 0; font-size: 18px; }
+.coinflip-status { margin: 0; overflow-wrap: anywhere; }
+.coinflip-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; min-height: 0; flex: 1; }
+.coinflip-candidate { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--hair); background: var(--card); }
+.coinflip-candidate h3 { display: flex; gap: 8px; align-items: baseline; margin: 0; padding: 8px 12px; font-size: 14px; border-bottom: 1px solid var(--hair); }
+.coinflip-badge { padding: 1px 9px; border-radius: 999px; background: var(--accent); color: var(--canvas); font-size: 11px; font-weight: 600; }
+.coinflip-description { margin: 0; padding: 6px 12px; color: var(--mute); overflow-wrap: anywhere; }
+/* A sandboxed candidate cannot report its height, so the frame is tall and the stage scrolls instead of the frame.
+   Wheel input over the pick control scrolls the stage. Content below 3000px is not shown. */
+.coinflip-stage { flex: 1; min-height: 40vh; max-height: 70vh; overflow-y: auto; background: var(--canvas); }
+.coinflip-canvas { position: relative; height: 3000px; }
+.coinflip-canvas iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+/* The trusted pick control covers the read-only frame; candidate content never receives the click. */
+.coinflip-pick { position: absolute; inset: 0; width: 100%; margin: 0; border: 2px solid transparent; background: transparent; color: transparent; cursor: pointer; }
+.coinflip-pick:hover:not(:disabled), .coinflip-pick:focus-visible { border-color: var(--accent); }
+.coinflip-pick:disabled { cursor: not-allowed; }
+.coinflip textarea { display: block; box-sizing: border-box; width: 100%; color: inherit; background: var(--canvas); border: 1px solid var(--hair); padding: 8px; }
+.coinflip .alert-actions button { margin: 4px 8px 4px 0; }
+@media (max-width: 1180px) { .coinflip-pair { grid-template-columns: minmax(0, 1fr); } }
